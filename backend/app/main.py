@@ -1,5 +1,7 @@
 """
 Foresight Backend — FastAPI Application Entry Point
+=====================================================
+Week 2: Added detections API, Redis caching, rate limiting middleware.
 """
 
 from contextlib import asynccontextmanager
@@ -10,9 +12,12 @@ from datetime import datetime
 import logging, json, os
 
 from app.db.database import init_db, close_db
+from app.cache.redis_cache import close_redis
 from app.api.auth import router as auth_router
 from app.api.signals import router as signals_router
+from app.api.detections import router as detections_router
 from app.api.monitoring import router as monitoring_router, metrics_middleware
+from app.middleware.rate_limit import RateLimitMiddleware
 
 
 class JSONFormatter(logging.Formatter):
@@ -40,13 +45,14 @@ async def lifespan(app: FastAPI):
     await init_db()
     yield
     logger.info("Foresight backend shutting down...")
+    await close_redis()
     await close_db()
 
 
 app = FastAPI(
     title="Foresight API",
     description="AI-powered trend intelligence — detect emerging trends before they go mainstream.",
-    version="0.1.0",
+    version="0.2.0",
     docs_url="/docs",
     redoc_url="/redoc",
     default_response_class=ORJSONResponse,
@@ -62,6 +68,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Rate limiting (Redis-backed with in-memory fallback)
+app.add_middleware(RateLimitMiddleware)
+
 
 @app.middleware("http")
 async def log_requests(request, call_next):
@@ -75,15 +84,16 @@ async def log_requests(request, call_next):
 # ── Routes ──
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(signals_router, prefix="/api/v1")
+app.include_router(detections_router, prefix="/api/v1")
 app.include_router(monitoring_router)
 app.middleware("http")(metrics_middleware)
 
 
 @app.get("/health", tags=["system"])
 async def health():
-    return {"status": "healthy", "version": "0.1.0", "timestamp": datetime.utcnow().isoformat() + "Z"}
+    return {"status": "healthy", "version": "0.2.0", "timestamp": datetime.utcnow().isoformat() + "Z"}
 
 
 @app.get("/", tags=["system"])
 async def root():
-    return {"service": "Foresight API", "version": "0.1.0", "docs": "/docs"}
+    return {"service": "Foresight API", "version": "0.2.0", "docs": "/docs"}
