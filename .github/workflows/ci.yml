@@ -1,0 +1,239 @@
+###############################################
+# Foresight CI/CD Pipeline
+# Database: Supabase (cloud) — no local Postgres needed
+# Tests: SQLite in-memory for unit tests (fast, isolated)
+###############################################
+
+name: Foresight CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  # ────────────────────────────────────────────
+  # Backend Tests
+  # ────────────────────────────────────────────
+  test-backend:
+    name: 🐍 Backend Tests
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Lint with Ruff
+        run: |
+          cd backend
+          ruff check app/
+
+      - name: Format check with Black
+        run: |
+          cd backend
+          black --check app/
+
+      - name: Type check with MyPy
+        run: |
+          cd backend
+          mypy app/ --ignore-missing-imports
+
+      - name: Run tests with coverage
+        env:
+          # Unit tests use SQLite (no Supabase connection needed)
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key-ci
+          APP_ENV: testing
+        run: |
+          cd backend
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml
+          flags: backend
+
+  # ────────────────────────────────────────────
+  # Backend Integration Tests (Supabase)
+  # ────────────────────────────────────────────
+  test-integration:
+    name: 🔗 Integration Tests (Supabase)
+    runs-on: ubuntu-latest
+    needs: [test-backend]
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run integration tests against Supabase
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: |
+          cd backend
+          pytest tests/ -v -m integration --cov=app --cov-report=term-missing
+
+  # ────────────────────────────────────────────
+  # Frontend Tests
+  # ────────────────────────────────────────────
+  test-frontend:
+    name: ⚛️ Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Lint
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Type check
+        run: |
+          cd frontend
+          npm run type-check
+
+      - name: Run unit tests
+        run: |
+          cd frontend
+          npm run test:coverage
+
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: frontend/coverage/lcov.info
+          flags: frontend
+
+  # ────────────────────────────────────────────
+  # E2E Tests (Playwright)
+  # ────────────────────────────────────────────
+  test-e2e:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: |
+          cd frontend
+          npm run test:e2e
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: frontend/test-results/
+
+  # ────────────────────────────────────────────
+  # Build & Push Docker Image
+  # ────────────────────────────────────────────
+  docker-build:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: |
+          docker build -t foresight-backend:${{ github.sha }} ./backend
+
+      - name: Build frontend image
+        run: |
+          docker build -t foresight-frontend:${{ github.sha }} ./frontend
+
+  # ────────────────────────────────────────────
+  # Deploy to Staging
+  # ────────────────────────────────────────────
+  deploy-staging:
+    name: 🚀 Deploy Staging
+    runs-on: ubuntu-latest
+    needs: [docker-build, test-integration]
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy backend to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: echo "Railway deployment — env vars include SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL"
+
+      - name: Deploy frontend to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: echo "Vercel deployment — env vars include NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY"

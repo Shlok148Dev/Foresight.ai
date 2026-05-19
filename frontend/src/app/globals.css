@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Foresight — Global Design System
+   ==========================================================================
+   Dark-mode premium aesthetic per Frontend Development Plan §2-3.
+   Colors, typography, and utilities defined as CSS custom properties.
+   ========================================================================== */
+
+@import "tailwindcss";
+
+/* ── Design Tokens ──────────────────────────────────────────────────────── */
+
+:root {
+  /* Background */
+  --color-bg-primary: #0A0A14;
+  --color-bg-secondary: #0F1419;
+  --color-bg-tertiary: #1A1F3A;
+  --color-bg-elevated: #252D45;
+
+  /* Accent */
+  --color-accent-primary: #6C63FF;
+  --color-accent-secondary: #00D4AA;
+  --color-accent-tertiary: #FF6B9D;
+
+  /* Text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0AEC0;
+  --color-text-tertiary: #718096;
+
+  /* Borders */
+  --color-border: #2A3050;
+  --color-border-hover: #00D4AA;
+
+  /* Status */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Spread Stages */
+  --color-embryonic: #6C63FF;
+  --color-emerging: #00D4AA;
+  --color-accelerating: #F59E0B;
+  --color-peaking: #EF4444;
+  --color-declining: #6B7280;
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px rgba(0, 212, 170, 0.1);
+  --shadow-glow-lg: 0 0 40px rgba(0, 212, 170, 0.15);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+  --transition-slow: 300ms ease-out;
+}
+
+
+/* ── Base Reset ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+::selection {
+  background-color: rgba(108, 99, 255, 0.4);
+  color: #FFFFFF;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-secondary);
+}
+
+/* ── Utility Classes ────────────────────────────────────────────────────── */
+
+.glass {
+  background: rgba(15, 20, 25, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glow-ring {
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 170, 0.2),
+    0 0 20px rgba(0, 212, 170, 0.08);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+}
+
+.gradient-border {
+  border-image: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary)) 1;
+}
+
+/* Animated gradient background for hero sections */
+.animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #0A0A14,
+    #1a0a3e,
+    #0A0A14,
+    #0a2a3e
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pulse animation for signal indicators */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-secondary);
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* Float animation for decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

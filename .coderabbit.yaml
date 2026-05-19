@@ -1,0 +1,101 @@
+# ========================================
+# CodeRabbit Configuration — Foresight
+# AI-Powered Code Review
+# ========================================
+
+language: "en-US"
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+
+  # Review scope
+  path_instructions:
+    - path: "backend/**"
+      instructions: |
+        Review Python code for:
+        - FastAPI best practices (async handlers, dependency injection)
+        - Pydantic model validation completeness
+        - SQLAlchemy query optimization (avoid N+1)
+        - Proper error handling with HTTPException
+        - Type hints on all functions
+        - Docstrings on public functions
+        - Security: no hardcoded secrets, proper auth checks
+
+    - path: "frontend/**"
+      instructions: |
+        Review TypeScript/React code for:
+        - React 19 best practices (server components, hooks)
+        - TypeScript strict mode compliance
+        - Proper error boundaries
+        - Accessibility (WCAG 2.1 AA)
+        - Performance (no unnecessary re-renders, memo where needed)
+        - Framer Motion animation best practices
+        - Zustand store patterns
+
+    - path: "tests/**"
+      instructions: |
+        Review test code for:
+        - Test coverage completeness (all edge cases)
+        - Proper mocking (no over-mocking)
+        - Descriptive test names
+        - Arrange-Act-Assert pattern
+        - No flaky tests
+
+  # Auto-review triggers
+  auto_review:
+    enabled: true
+    drafts: false
+
+  # Rules
+  rules:
+    - name: "Security"
+      enabled: true
+      checks:
+        - sql_injection
+        - xss_attacks
+        - csrf_tokens
+        - secrets_exposure
+        - input_validation
+
+    - name: "Performance"
+      enabled: true
+      checks:
+        - n_plus_one_queries
+        - large_bundles
+        - memory_leaks
+        - slow_algorithms
+        - missing_indexes
+
+    - name: "Best Practices"
+      enabled: true
+      checks:
+        - dead_code
+        - code_complexity
+        - type_safety
+        - error_handling
+        - proper_logging
+
+    - name: "Testing"
+      enabled: true
+      checks:
+        - test_coverage_minimum: 85
+        - missing_edge_cases
+        - flaky_tests
+
+  # Ignore paths
+  ignore:
+    - "node_modules/**"
+    - "venv/**"
+    - ".git/**"
+    - "dist/**"
+    - "build/**"
+    - ".next/**"
+    - "__pycache__/**"
+    - "*.lock"
+    - "*.log"
+
+chat:
+  auto_reply: true

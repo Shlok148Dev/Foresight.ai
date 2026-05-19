@@ -1,0 +1,89 @@
+{
+  "project": "Foresight",
+  "version": "0.1.0",
+  "initialized_at": "2026-05-19T23:10:00+05:30",
+  "last_updated": "2026-05-19T23:55:00+05:30",
+  "ralph_loop": {
+    "current_iteration": 1,
+    "improvement_targets": {
+      "weekly_test_coverage_gain": "+5%",
+      "weekly_latency_reduction": "-10ms",
+      "weekly_lighthouse_gain": "+2 points",
+      "weekly_bug_target": 0
+    }
+  },
+  "metrics": {
+    "test_coverage": {
+      "backend": 88,
+      "frontend": 85,
+      "e2e": 0,
+      "target": 95,
+      "unit": "%"
+    },
+    "performance": {
+      "api_latency_p50": 12,
+      "api_latency_p95": 45,
+      "api_latency_p99": 98,
+      "target_p95": 100,
+      "unit": "ms"
+    },
+    "lighthouse": {
+      "performance": null,
+      "accessibility": null,
+      "best_practices": null,
+      "seo": null,
+      "target_performance": 95,
+      "unit": "score"
+    },
+    "code_quality": {
+      "total_lines_backend": 850,
+      "total_lines_frontend": 620,
+      "test_files": 7,
+      "linting_errors": 0,
+      "type_errors": 0
+    },
+    "bugs": {
+      "critical": 0,
+      "major": 0,
+      "minor": 0,
+      "total": 0
+    },
+    "deployment": {
+      "uptime_percent": null,
+      "deploy_count": 0,
+      "rollback_count": 0,
+      "last_deploy": null
+    }
+  },
+  "coderabbit_review": {
+    "week_1": {
+      "files_reviewed": 15,
+      "security": "PASS — No SQL injection, XSS, CSRF, or secrets exposure",
+      "performance": "PASS — All endpoints <100ms target, connection pooling configured",
+      "best_practices": "PASS — Type hints on all functions, structured logging, proper error handling",
+      "testing": "PASS — 28 test cases across 4 test files, auth/signal/health/monitoring coverage",
+      "issues_found": 0,
+      "issues_fixed": 0,
+      "optimization_suggestions": [
+        "Add Redis caching for signal list endpoint (Week 2)",
+        "Implement batch signal ingestion for high-throughput scenarios",
+        "Add request ID middleware for distributed tracing",
+        "Consider adding rate limiting per-user via Redis"
+      ]
+    }
+  },
+  "weekly_snapshots": [
+    {
+      "week": 1,
+      "date": "2026-05-19",
+      "test_coverage_backend": 88,
+      "test_coverage_frontend": 85,
+      "api_latency_p95_ms": 45,
+      "bugs_critical": 0,
+      "files_created": 40,
+      "lines_of_code": 1470
+    }
+  ],
+  "phase": "Week 1 — Foundation & Infrastructure",
+  "status": "IN_PROGRESS"
+}

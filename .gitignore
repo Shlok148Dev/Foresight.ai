@@ -1,0 +1,51 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.mypy_cache/
+.ruff_cache/
+
+# ── Node.js ──
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# ── Environment ──
+.env
+.env.local
+.env.*.local
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Testing ──
+coverage/
+htmlcov/
+.coverage
+*.xml
+test-results/
+playwright-report/
+
+# ── Docker ──
+*.log
+
+# ── Misc ──
+*.bak
+*.tmp

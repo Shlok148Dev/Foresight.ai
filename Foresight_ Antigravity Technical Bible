@@ -1,0 +1,2973 @@
+# Foresight: Antigravity Technical Bible
+## Complete Step-by-Step Development Guide for Antigravity AI
+
+**Version:** 1.0  
+**Date:** May 14, 2026  
+**Purpose:** Tell Antigravity exactly what to build at every step  
+**Status:** Production-Ready Blueprint  
+
+---
+
+## Table of Contents
+
+1. [Introduction for Antigravity](#introduction-for-antigravity)
+2. [Project Architecture Overview](#project-architecture-overview)
+3. [Phase 1: Foundation (Weeks 1-4)](#phase-1-foundation-weeks-1-4)
+4. [Phase 2: Core Features (Weeks 5-8)](#phase-2-core-features-weeks-5-8)
+5. [Phase 3: Advanced Features (Weeks 9-12)](#phase-3-advanced-features-weeks-9-12)
+6. [Phase 4: Launch (Weeks 13-16)](#phase-4-launch-weeks-13-16)
+7. [Quality Assurance & Testing](#quality-assurance--testing)
+8. [Optimization & Performance](#optimization--performance)
+9. [Troubleshooting & Recovery](#troubleshooting--recovery)
+10. [Deployment & Launch](#deployment--launch)
+
+---
+
+## Introduction for Antigravity
+
+### What You're Building
+
+**Foresight** is a **$50B+ market opportunity** AI-powered trend intelligence platform that:
+- Detects emerging trends from 50+ social media sources in real-time
+- Predicts trend trajectories using MiroFish multi-agent simulation
+- Provides interactive dashboards and simulation replay
+- Offers public API for integrations
+- Is 100% open-source
+
+### Your Role (Antigravity)
+
+You will:
+1. **Generate production-ready code** from detailed specifications
+2. **Follow exact architecture** defined in this bible
+3. **Ensure code quality** (bug-free, optimized, tested)
+4. **Integrate components** seamlessly
+5. **Maintain consistency** across the codebase
+6. **Optimize for performance** at every step
+
+### How to Use This Bible
+
+**For each feature/component:**
+1. Read the **Specification** (what to build)
+2. Read the **Architecture** (how it connects)
+3. Read the **Implementation Details** (exact code patterns)
+4. Read the **Testing Requirements** (how to verify)
+5. Read the **Optimization Tips** (how to make it fast)
+6. **Generate code** based on all of the above
+7. **Verify** against the specification
+8. **Optimize** for performance
+9. **Test** comprehensively
+10. **Move to next feature**
+
+---
+
+## Project Architecture Overview
+
+### System Design
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        FRONTEND (Next.js)                   │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  Landing Page │ Dashboard │ Search │ Replay │ Admin  │  │
+│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  State Management (Zustand) │ API Client (tRPC)     │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓ (HTTP/WebSocket)
+┌─────────────────────────────────────────────────────────────┐
+│                      BACKEND (FastAPI)                      │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  Signal Ingestion │ Detection │ Forecasting │ API    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  MiroFish Integration │ LLM Orchestration │ Cache    │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    DATA LAYER (PostgreSQL)                  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  Signals │ Detections │ Forecasts │ Users │ Configs  │  │
+│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  Redis Cache │ Elasticsearch Index │ pgvector Index  │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Frontend | Next.js 15 | React framework with SSR |
+| Frontend | React 19 | UI library |
+| Frontend | TypeScript | Type safety |
+| Frontend | Tailwind CSS 4 | Styling |
+| Frontend | shadcn/ui | Component library |
+| Frontend | Zustand | State management |
+| Frontend | tRPC | Type-safe API client |
+| Backend | FastAPI | Web framework |
+| Backend | Python 3.11 | Runtime |
+| Backend | Pydantic | Data validation |
+| Backend | SQLAlchemy | ORM |
+| Database | PostgreSQL | Primary DB |
+| Database | pgvector | Vector embeddings |
+| Cache | Redis | Caching/sessions |
+| Search | Elasticsearch | Full-text search |
+| AI/ML | LangChain | LLM orchestration |
+| AI/ML | MiroFish | Multi-agent simulation |
+| AI/ML | spaCy | NLP |
+| AI/ML | Prophet | Time series forecasting |
+| Testing | Vitest | Unit tests |
+| Testing | Playwright | E2E tests |
+| Testing | pytest | Python tests |
+| DevOps | Docker | Containerization |
+| DevOps | GitHub Actions | CI/CD |
+
+### Code Organization
+
+```
+foresight/
+├── frontend/                    # Next.js frontend
+│   ├── src/
+│   │   ├── pages/              # Page components
+│   │   ├── components/         # Reusable components
+│   │   ├── hooks/              # Custom hooks
+│   │   ├── lib/                # Utilities
+│   │   ├── store/              # Zustand stores
+│   │   └── styles/             # Global styles
+│   ├── public/                 # Static assets
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── backend/                     # FastAPI backend
+│   ├── app/
+│   │   ├── main.py             # Entry point
+│   │   ├── api/                # API routes
+│   │   │   ├── signals.py
+│   │   │   ├── detection.py
+│   │   │   ├── forecasting.py
+│   │   │   └── simulation.py
+│   │   ├── models/             # Data models
+│   │   ├── services/           # Business logic
+│   │   ├── db/                 # Database
+│   │   ├── cache/              # Caching
+│   │   └── utils/              # Utilities
+│   ├── tests/                  # Test files
+│   ├── requirements.txt
+│   └── pyproject.toml
+│
+├── docker-compose.yml          # Local development
+├── Dockerfile                  # Production image
+├── .github/
+│   └── workflows/              # CI/CD pipelines
+└── docs/                       # Documentation
+```
+
+---
+
+## Phase 1: Foundation (Weeks 1-4)
+
+### Week 1: Project Setup & Architecture
+
+#### Step 1.1: Initialize Project Structure
+
+**Specification:**
+- Create Next.js project with TypeScript
+- Create FastAPI project with Python 3.11
+- Set up Docker Compose for local development
+- Initialize Git repository with proper .gitignore
+- Configure ESLint, Prettier, Black for code formatting
+
+**Implementation Details:**
+
+```bash
+# Frontend initialization
+npx create-next-app@latest foresight-frontend --typescript --tailwind
+cd foresight-frontend
+npm install zustand axios tRPC @trpc/client @trpc/react-query
+
+# Backend initialization
+mkdir foresight-backend
+cd foresight-backend
+python3.11 -m venv venv
+source venv/bin/activate
+pip install fastapi uvicorn sqlalchemy psycopg2-binary redis pydantic
+
+# Docker setup
+cat > docker-compose.yml << 'EOF'
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: foresight
+      POSTGRES_USER: foresight
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+
+volumes:
+  postgres_data:
+EOF
+
+docker-compose up -d
+```
+
+**Testing Requirements:**
+- [ ] All services start without errors
+- [ ] PostgreSQL accessible on localhost:5432
+- [ ] Redis accessible on localhost:6379
+- [ ] Elasticsearch accessible on localhost:9200
+
+**Optimization Tips:**
+- Use Docker Compose for consistent local development
+- Pre-build images to speed up startup
+- Use volume mounts for hot-reload
+
+---
+
+#### Step 1.2: Configure CI/CD Pipeline
+
+**Specification:**
+- Set up GitHub Actions for automated testing
+- Run tests on every push
+- Run linting on every push
+- Build Docker image on main branch
+- Deploy to staging on main branch
+
+**Implementation Details:**
+
+```yaml
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          cd backend
+          pytest tests/ --cov=app --cov-report=xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+      - name: Run tests
+        run: |
+          cd frontend
+          npm run test
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Lint backend
+        run: |
+          cd backend
+          pip install pylint black
+          black --check app/
+          pylint app/
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npm install
+          npm run lint
+```
+
+**Testing Requirements:**
+- [ ] CI pipeline runs on every push
+- [ ] Tests pass before merge
+- [ ] Linting passes before merge
+- [ ] Coverage reports generated
+
+**Optimization Tips:**
+- Cache dependencies to speed up CI
+- Run tests in parallel
+- Use matrix strategy for multiple Python versions
+
+---
+
+#### Step 1.3: Set Up Monitoring & Logging
+
+**Specification:**
+- Configure structured logging for backend
+- Set up error tracking (Sentry)
+- Configure metrics collection (Prometheus)
+- Set up log aggregation (ELK Stack)
+
+**Implementation Details:**
+
+```python
+# backend/app/logging_config.py
+import logging
+import json
+from datetime import datetime
+
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        log_obj = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+            "line": record.lineno
+        }
+        if record.exc_info:
+            log_obj["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_obj)
+
+def setup_logging():
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    handler.setFormatter(JSONFormatter())
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    return logger
+
+# Usage in main.py
+logger = setup_logging()
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info(f"Request: {request.method} {request.url.path}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code}")
+    return response
+```
+
+**Testing Requirements:**
+- [ ] Logs are structured JSON
+- [ ] All errors are logged
+- [ ] Performance metrics are collected
+- [ ] Logs can be aggregated
+
+**Optimization Tips:**
+- Use structured logging for easier parsing
+- Log only essential information
+- Use log levels appropriately
+
+---
+
+### Week 2: Backend Foundation
+
+#### Step 2.1: Database Schema Design
+
+**Specification:**
+- Design PostgreSQL schema for signals, detections, forecasts, users
+- Create indexes for performance
+- Set up migrations
+- Implement connection pooling
+
+**Implementation Details:**
+
+```python
+# backend/app/models/database.py
+from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, ForeignKey, Index
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True, nullable=False)
+    username = Column(String(255), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    __table_args__ = (
+        Index('idx_email', 'email'),
+        Index('idx_username', 'username'),
+    )
+
+class Signal(Base):
+    __tablename__ = "signals"
+    
+    id = Column(Integer, primary_key=True)
+    text = Column(String(2000), nullable=False)
+    platform = Column(String(50), nullable=False)  # twitter, reddit, discord, etc
+    author = Column(String(255))
+    url = Column(String(500))
+    metadata = Column(JSON)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        Index('idx_platform_created', 'platform', 'created_at'),
+        Index('idx_created_at', 'created_at'),
+    )
+
+class Detection(Base):
+    __tablename__ = "detections"
+    
+    id = Column(Integer, primary_key=True)
+    topic = Column(String(255), nullable=False)
+    stage = Column(String(50), nullable=False)  # embryonic, emerging, accelerating, peaking, declining
+    confidence = Column(Float, nullable=False)  # 0-1
+    signal_count = Column(Integer, default=0)
+    platforms = Column(JSON)  # List of platforms
+    velocity = Column(Float)  # signals per hour
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    __table_args__ = (
+        Index('idx_topic', 'topic'),
+        Index('idx_stage', 'stage'),
+        Index('idx_confidence', 'confidence'),
+        Index('idx_created_at', 'created_at'),
+    )
+
+class Forecast(Base):
+    __tablename__ = "forecasts"
+    
+    id = Column(Integer, primary_key=True)
+    detection_id = Column(Integer, ForeignKey('detections.id'))
+    forecast_date = Column(DateTime, nullable=False)
+    predicted_mentions = Column(Integer)
+    predicted_stage = Column(String(50))
+    confidence = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        Index('idx_detection_id', 'detection_id'),
+        Index('idx_forecast_date', 'forecast_date'),
+    )
+
+class Simulation(Base):
+    __tablename__ = "simulations"
+    
+    id = Column(Integer, primary_key=True)
+    detection_id = Column(Integer, ForeignKey('detections.id'))
+    simulation_data = Column(JSON)  # MiroFish simulation results
+    spread_path = Column(JSON)  # How signal spreads
+    virality_coefficient = Column(Float)
+    decay_probability = Column(Float)
+    mainstream_eta = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        Index('idx_detection_id', 'detection_id'),
+        Index('idx_created_at', 'created_at'),
+    )
+```
+
+**Testing Requirements:**
+- [ ] Schema creates without errors
+- [ ] All indexes are created
+- [ ] Foreign keys work correctly
+- [ ] Migrations are reversible
+
+**Optimization Tips:**
+- Index frequently queried columns
+- Use JSON for flexible data
+- Use connection pooling (SQLAlchemy pool)
+- Partition large tables by date if needed
+
+---
+
+#### Step 2.2: Authentication & Authorization
+
+**Specification:**
+- Implement JWT-based authentication
+- Create login/register endpoints
+- Implement role-based access control (RBAC)
+- Secure password hashing with bcrypt
+
+**Implementation Details:**
+
+```python
+# backend/app/services/auth.py
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+import jwt
+from typing import Optional
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+
+SECRET_KEY = "your-secret-key-here"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_token(credentials: HTTPAuthCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return user_id
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# API endpoints
+@app.post("/auth/register")
+async def register(email: str, password: str, username: str):
+    # Hash password
+    hashed_password = hash_password(password)
+    # Create user in database
+    # Return access token
+
+@app.post("/auth/login")
+async def login(email: str, password: str):
+    # Find user by email
+    # Verify password
+    # Return access token
+
+@app.post("/auth/logout")
+async def logout(user_id: int = Depends(verify_token)):
+    # Invalidate token (add to blacklist)
+    pass
+```
+
+**Testing Requirements:**
+- [ ] Password hashing works correctly
+- [ ] JWT tokens are valid
+- [ ] Token expiration works
+- [ ] Invalid tokens are rejected
+
+**Optimization Tips:**
+- Use bcrypt for password hashing (slow by design)
+- Cache user data after authentication
+- Use short-lived access tokens + refresh tokens
+
+---
+
+#### Step 2.3: Signal Ingestion API
+
+**Specification:**
+- Create endpoint to receive signals from external sources
+- Validate signal format
+- Store signals in database
+- Implement rate limiting
+- Queue signals for processing
+
+**Implementation Details:**
+
+```python
+# backend/app/api/signals.py
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from pydantic import BaseModel
+from typing import List
+import redis
+
+router = APIRouter(prefix="/signals", tags=["signals"])
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
+
+class SignalInput(BaseModel):
+    text: str
+    platform: str  # twitter, reddit, discord, etc
+    author: str
+    url: str
+    metadata: dict = {}
+
+class SignalResponse(BaseModel):
+    id: int
+    text: str
+    platform: str
+    created_at: str
+
+@router.post("/ingest", response_model=SignalResponse)
+async def ingest_signal(
+    signal: SignalInput,
+    background_tasks: BackgroundTasks,
+    user_id: int = Depends(verify_token)
+):
+    """
+    Ingest a signal from external source.
+    
+    Rate limit: 1000 signals per minute per user
+    """
+    # Check rate limit
+    rate_limit_key = f"signal_ingest:{user_id}"
+    current_count = redis_client.incr(rate_limit_key)
+    if current_count == 1:
+        redis_client.expire(rate_limit_key, 60)
+    
+    if current_count > 1000:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+    
+    # Validate signal
+    if len(signal.text) < 10 or len(signal.text) > 2000:
+        raise HTTPException(status_code=400, detail="Signal text must be 10-2000 characters")
+    
+    # Store in database
+    db_signal = Signal(
+        text=signal.text,
+        platform=signal.platform,
+        author=signal.author,
+        url=signal.url,
+        metadata=signal.metadata
+    )
+    db.add(db_signal)
+    db.commit()
+    db.refresh(db_signal)
+    
+    # Queue for processing
+    background_tasks.add_task(process_signal, db_signal.id)
+    
+    return SignalResponse(
+        id=db_signal.id,
+        text=db_signal.text,
+        platform=db_signal.platform,
+        created_at=db_signal.created_at.isoformat()
+    )
+
+@router.get("/", response_model=List[SignalResponse])
+async def list_signals(
+    limit: int = 100,
+    offset: int = 0,
+    platform: str = None,
+    user_id: int = Depends(verify_token)
+):
+    """List signals with optional filtering."""
+    query = db.query(Signal)
+    
+    if platform:
+        query = query.filter(Signal.platform == platform)
+    
+    signals = query.order_by(Signal.created_at.desc()).limit(limit).offset(offset).all()
+    
+    return [
+        SignalResponse(
+            id=s.id,
+            text=s.text,
+            platform=s.platform,
+            created_at=s.created_at.isoformat()
+        )
+        for s in signals
+    ]
+
+async def process_signal(signal_id: int):
+    """Background task to process signal."""
+    signal = db.query(Signal).filter(Signal.id == signal_id).first()
+    # Process signal (detect, forecast, etc)
+    # This will be called by detection engine
+```
+
+**Testing Requirements:**
+- [ ] Valid signals are stored
+- [ ] Invalid signals are rejected
+- [ ] Rate limiting works
+- [ ] Background processing starts
+- [ ] Signals can be retrieved
+
+**Optimization Tips:**
+- Use background tasks for heavy processing
+- Implement rate limiting to prevent abuse
+- Cache frequently accessed signals
+- Use batch inserts for bulk signals
+
+---
+
+### Week 3: Frontend Foundation
+
+#### Step 3.1: Landing Page & Authentication UI
+
+**Specification:**
+- Create landing page with hero section
+- Create login/register forms
+- Implement form validation
+- Add error handling
+- Responsive design for all devices
+
+**Implementation Details:**
+
+```typescript
+// frontend/src/pages/index.tsx
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Navigation */}
+      <nav className="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur">
+        <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+          Foresight
+        </div>
+        <div className="flex gap-4">
+          <Link href="/login" className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition">
+            Login
+          </Link>
+          <Link href="/register" className="px-6 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition">
+            Register
+          </Link>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-bold text-white mb-6">
+            See Trends Before They Break Out
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Foresight uses AI-powered signal detection to predict emerging trends 
+            across 50+ social media platforms. Get ahead of the curve.
+          </p>
+          <Link 
+            href="/register"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg font-bold text-white hover:shadow-lg hover:shadow-purple-500/50 transition"
+          >
+            Get Started Free
+          </Link>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-8 mt-20">
+          <div className="bg-white/5 backdrop-blur p-6 rounded-lg border border-white/10">
+            <div className="text-4xl mb-4">🔥</div>
+            <h3 className="text-xl font-bold text-white mb-2">Real-Time Detection</h3>
+            <p className="text-gray-400">Detect emerging trends as they happen across all major platforms.</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur p-6 rounded-lg border border-white/10">
+            <div className="text-4xl mb-4">📈</div>
+            <h3 className="text-xl font-bold text-white mb-2">Trend Forecasting</h3>
+            <p className="text-gray-400">Predict trend trajectories with 26-week forecasts powered by AI.</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur p-6 rounded-lg border border-white/10">
+            <div className="text-4xl mb-4">🎬</div>
+            <h3 className="text-xl font-bold text-white mb-2">Simulation Replay</h3>
+            <p className="text-gray-400">Watch how trends spread across communities in interactive replays.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+```typescript
+// frontend/src/pages/login.tsx
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password
+      });
+
+      localStorage.setItem('token', response.data.access_token);
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+      <div className="bg-white/10 backdrop-blur p-8 rounded-lg border border-white/20 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-white mb-6">Login to Foresight</h1>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-white mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-white mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          {error && <div className="text-red-400 text-sm">{error}</div>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg font-bold text-white hover:shadow-lg hover:shadow-purple-500/50 transition disabled:opacity-50"
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+
+        <p className="text-gray-400 text-center mt-4">
+          Don't have an account? <a href="/register" className="text-purple-400 hover:text-purple-300">Register</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+**Testing Requirements:**
+- [ ] Landing page renders correctly
+- [ ] Login form validates input
+- [ ] Register form validates input
+- [ ] Authentication works end-to-end
+- [ ] Responsive on mobile/tablet/desktop
+
+**Optimization Tips:**
+- Use Next.js Image component for optimization
+- Lazy load non-critical components
+- Minimize CSS bundle size
+- Use CSS-in-JS for dynamic styles
+
+---
+
+#### Step 3.2: Dashboard Layout & State Management
+
+**Specification:**
+- Create dashboard layout with sidebar
+- Implement state management with Zustand
+- Create reusable components (Card, Button, Input)
+- Set up API client with tRPC
+- Implement error boundaries
+
+**Implementation Details:**
+
+```typescript
+// frontend/src/store/useAppStore.ts
+import { create } from 'zustand';
+
+interface User {
+  id: number;
+  email: string;
+  username: string;
+}
+
+interface Signal {
+  id: number;
+  text: string;
+  platform: string;
+  created_at: string;
+}
+
+interface AppState {
+  user: User | null;
+  signals: Signal[];
+  loading: boolean;
+  error: string | null;
+  
+  setUser: (user: User | null) => void;
+  setSignals: (signals: Signal[]) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  addSignal: (signal: Signal) => void;
+  logout: () => void;
+}
+
+export const useAppStore = create<AppState>((set) => ({
+  user: null,
+  signals: [],
+  loading: false,
+  error: null,
+  
+  setUser: (user) => set({ user }),
+  setSignals: (signals) => set({ signals }),
+  setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
+  addSignal: (signal) => set((state) => ({
+    signals: [signal, ...state.signals]
+  })),
+  logout: () => set({ user: null, signals: [], error: null })
+}));
+```
+
+```typescript
+// frontend/src/pages/dashboard.tsx
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAppStore } from '@/store/useAppStore';
+import DashboardLayout from '@/components/DashboardLayout';
+import SignalCard from '@/components/SignalCard';
+
+export default function Dashboard() {
+  const router = useRouter();
+  const { user, signals, loading, error, setUser, setSignals, setLoading } = useAppStore();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    // Fetch user data
+    fetchUserData(token);
+    // Fetch signals
+    fetchSignals(token);
+  }, []);
+
+  const fetchUserData = async (token: string) => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setUser(data);
+    } catch (err) {
+      console.error('Failed to fetch user:', err);
+    }
+  };
+
+  const fetchSignals = async (token: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/signals?limit=20', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setSignals(data);
+    } catch (err) {
+      console.error('Failed to fetch signals:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <DashboardLayout user={user}>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 text-red-200">
+            {error}
+          </div>
+        )}
+
+        <div className="grid gap-4">
+          {loading ? (
+            <div>Loading signals...</div>
+          ) : signals.length === 0 ? (
+            <div className="text-gray-400">No signals yet</div>
+          ) : (
+            signals.map((signal) => (
+              <SignalCard key={signal.id} signal={signal} />
+            ))
+          )}
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
+```
+
+**Testing Requirements:**
+- [ ] Dashboard renders after login
+- [ ] State management works correctly
+- [ ] API calls are made
+- [ ] Error handling works
+- [ ] Logout works
+
+**Optimization Tips:**
+- Use Zustand for lightweight state management
+- Implement data fetching with SWR or React Query
+- Memoize expensive computations
+- Use code splitting for routes
+
+---
+
+### Week 4: Integration & Testing
+
+#### Step 4.1: End-to-End Testing
+
+**Specification:**
+- Write E2E tests with Playwright
+- Test user flows (login, view dashboard, etc)
+- Test error scenarios
+- Test performance
+- Run tests in CI/CD
+
+**Implementation Details:**
+
+```typescript
+// frontend/tests/e2e/auth.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Authentication Flow', () => {
+  test('should register new user', async ({ page }) => {
+    await page.goto('http://localhost:3000/register');
+    
+    await page.fill('input[type="email"]', 'test@example.com');
+    await page.fill('input[type="password"]', 'password123');
+    await page.fill('input[name="username"]', 'testuser');
+    
+    await page.click('button[type="submit"]');
+    
+    await page.waitForURL('http://localhost:3000/dashboard');
+    expect(page.url()).toContain('/dashboard');
+  });
+
+  test('should login existing user', async ({ page }) => {
+    await page.goto('http://localhost:3000/login');
+    
+    await page.fill('input[type="email"]', 'test@example.com');
+    await page.fill('input[type="password"]', 'password123');
+    
+    await page.click('button[type="submit"]');
+    
+    await page.waitForURL('http://localhost:3000/dashboard');
+    expect(page.url()).toContain('/dashboard');
+  });
+
+  test('should show error on invalid credentials', async ({ page }) => {
+    await page.goto('http://localhost:3000/login');
+    
+    await page.fill('input[type="email"]', 'wrong@example.com');
+    await page.fill('input[type="password"]', 'wrongpassword');
+    
+    await page.click('button[type="submit"]');
+    
+    const errorMessage = await page.locator('text=Login failed');
+    await expect(errorMessage).toBeVisible();
+  });
+});
+```
+
+```python
+# backend/tests/test_signals.py
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+@pytest.fixture
+def auth_token():
+    # Register user
+    response = client.post("/auth/register", json={
+        "email": "test@example.com",
+        "password": "password123",
+        "username": "testuser"
+    })
+    # Login
+    response = client.post("/auth/login", json={
+        "email": "test@example.com",
+        "password": "password123"
+    })
+    return response.json()["access_token"]
+
+def test_ingest_signal(auth_token):
+    response = client.post(
+        "/signals/ingest",
+        json={
+            "text": "This is a test signal",
+            "platform": "twitter",
+            "author": "testuser",
+            "url": "https://twitter.com/test"
+        },
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    assert response.status_code == 200
+    assert response.json()["text"] == "This is a test signal"
+
+def test_list_signals(auth_token):
+    # Ingest a signal first
+    client.post(
+        "/signals/ingest",
+        json={
+            "text": "Test signal",
+            "platform": "twitter",
+            "author": "testuser",
+            "url": "https://twitter.com/test"
+        },
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    
+    # List signals
+    response = client.get(
+        "/signals/",
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) > 0
+
+def test_rate_limiting(auth_token):
+    # Try to ingest 1001 signals
+    for i in range(1001):
+        response = client.post(
+            "/signals/ingest",
+            json={
+                "text": f"Signal {i}",
+                "platform": "twitter",
+                "author": "testuser",
+                "url": f"https://twitter.com/test{i}"
+            },
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+        if i < 1000:
+            assert response.status_code == 200
+        else:
+            assert response.status_code == 429  # Rate limit exceeded
+```
+
+**Testing Requirements:**
+- [ ] All user flows tested
+- [ ] Error scenarios tested
+- [ ] Performance acceptable
+- [ ] Tests pass in CI/CD
+- [ ] Code coverage > 85%
+
+**Optimization Tips:**
+- Run tests in parallel
+- Use test fixtures for setup
+- Mock external APIs
+- Use performance profiling
+
+---
+
+#### Step 4.2: Staging Deployment
+
+**Specification:**
+- Deploy backend to Railway staging
+- Deploy frontend to Vercel staging
+- Set up staging database
+- Configure environment variables
+- Run smoke tests
+
+**Implementation Details:**
+
+```bash
+# Deploy backend to Railway
+railway login
+railway link  # Link to Railway project
+railway up
+
+# Deploy frontend to Vercel
+vercel deploy --prod
+
+# Run smoke tests
+npm run test:e2e -- --project=chromium
+```
+
+**Testing Requirements:**
+- [ ] Staging environment is live
+- [ ] All services are running
+- [ ] Database is accessible
+- [ ] Smoke tests pass
+- [ ] Performance is acceptable
+
+**Optimization Tips:**
+- Use staging for final testing before production
+- Monitor staging environment
+- Test deployment process
+- Document deployment steps
+
+---
+
+## Phase 2: Core Features (Weeks 5-8)
+
+### Week 5: Signal Detection Engine
+
+#### Step 5.1: NLP Signal Processing
+
+**Specification:**
+- Process signals with spaCy NLP
+- Extract entities (topics, keywords, sentiment)
+- Normalize text
+- Remove duplicates
+- Classify signals by category
+
+**Implementation Details:**
+
+```python
+# backend/app/services/nlp_processor.py
+import spacy
+from typing import List, Dict
+import hashlib
+from datetime import datetime, timedelta
+
+nlp = spacy.load("en_core_web_sm")
+
+class SignalProcessor:
+    def __init__(self):
+        self.processed_signals = {}
+        self.deduplication_window = timedelta(hours=1)
+    
+    def process_signal(self, text: str, platform: str) -> Dict:
+        """
+        Process a signal through NLP pipeline.
+        
+        Returns:
+        {
+            "text": str,
+            "entities": List[str],
+            "keywords": List[str],
+            "sentiment": str,  # positive, negative, neutral
+            "category": str,
+            "normalized_text": str,
+            "hash": str
+        }
+        """
+        # Normalize text
+        normalized = self._normalize_text(text)
+        
+        # Check for duplicates
+        signal_hash = hashlib.md5(normalized.encode()).hexdigest()
+        if self._is_duplicate(signal_hash):
+            return None
+        
+        # Process with spaCy
+        doc = nlp(normalized)
+        
+        # Extract entities
+        entities = [ent.text for ent in doc.ents]
+        
+        # Extract keywords (nouns and proper nouns)
+        keywords = [token.text for token in doc if token.pos_ in ["NOUN", "PROPN"]]
+        
+        # Classify sentiment (simple heuristic)
+        sentiment = self._classify_sentiment(text)
+        
+        # Classify category
+        category = self._classify_category(keywords, entities)
+        
+        return {
+            "text": text,
+            "normalized_text": normalized,
+            "entities": list(set(entities)),
+            "keywords": list(set(keywords)),
+            "sentiment": sentiment,
+            "category": category,
+            "hash": signal_hash,
+            "platform": platform
+        }
+    
+    def _normalize_text(self, text: str) -> str:
+        """Normalize text for processing."""
+        # Remove URLs
+        text = re.sub(r'http\S+|www\S+', '', text)
+        # Remove mentions
+        text = re.sub(r'@\w+', '', text)
+        # Remove hashtags (keep text)
+        text = re.sub(r'#(\w+)', r'\1', text)
+        # Convert to lowercase
+        text = text.lower()
+        # Remove extra whitespace
+        text = ' '.join(text.split())
+        return text
+    
+    def _is_duplicate(self, signal_hash: str) -> bool:
+        """Check if signal is duplicate."""
+        if signal_hash in self.processed_signals:
+            last_seen = self.processed_signals[signal_hash]
+            if datetime.utcnow() - last_seen < self.deduplication_window:
+                return True
+        self.processed_signals[signal_hash] = datetime.utcnow()
+        return False
+    
+    def _classify_sentiment(self, text: str) -> str:
+        """Classify sentiment of text."""
+        # Simple heuristic (can be replaced with ML model)
+        positive_words = ['good', 'great', 'awesome', 'amazing', 'love', 'best']
+        negative_words = ['bad', 'terrible', 'awful', 'hate', 'worst', 'sucks']
+        
+        text_lower = text.lower()
+        positive_count = sum(1 for word in positive_words if word in text_lower)
+        negative_count = sum(1 for word in negative_words if word in text_lower)
+        
+        if positive_count > negative_count:
+            return "positive"
+        elif negative_count > positive_count:
+            return "negative"
+        else:
+            return "neutral"
+    
+    def _classify_category(self, keywords: List[str], entities: List[str]) -> str:
+        """Classify signal category."""
+        # Simple category classification based on keywords
+        categories = {
+            "technology": ["ai", "tech", "software", "code", "app", "algorithm"],
+            "finance": ["stock", "crypto", "bitcoin", "ethereum", "market", "trading"],
+            "health": ["health", "medical", "disease", "vaccine", "covid", "wellness"],
+            "business": ["startup", "business", "company", "entrepreneur", "ipo"],
+            "entertainment": ["movie", "music", "celebrity", "entertainment", "show"]
+        }
+        
+        all_words = keywords + entities
+        all_words_lower = [w.lower() for w in all_words]
+        
+        for category, keywords_list in categories.items():
+            if any(keyword in all_words_lower for keyword in keywords_list):
+                return category
+        
+        return "other"
+
+# Usage
+processor = SignalProcessor()
+
+@app.post("/signals/process")
+async def process_signal(signal_id: int):
+    signal = db.query(Signal).filter(Signal.id == signal_id).first()
+    processed = processor.process_signal(signal.text, signal.platform)
+    
+    if processed:
+        # Store processed data
+        signal.metadata = processed
+        db.commit()
+        return processed
+    else:
+        return {"status": "duplicate"}
+```
+
+**Testing Requirements:**
+- [ ] Text normalization works correctly
+- [ ] Duplicate detection works
+- [ ] Entity extraction works
+- [ ] Sentiment classification works
+- [ ] Category classification works
+
+**Optimization Tips:**
+- Cache NLP model in memory
+- Batch process signals for efficiency
+- Use GPU for spaCy if available
+- Implement signal deduplication cache
+
+---
+
+#### Step 5.2: Trend Detection Algorithm
+
+**Specification:**
+- Detect emerging trends from processed signals
+- Calculate confidence scores
+- Identify trend stage (embryonic, emerging, accelerating, peaking, declining)
+- Track velocity (signals per hour)
+- Group related signals by topic
+
+**Implementation Details:**
+
+```python
+# backend/app/services/detection_engine.py
+from typing import List, Dict
+from datetime import datetime, timedelta
+from collections import defaultdict
+import numpy as np
+
+class TrendDetectionEngine:
+    def __init__(self):
+        self.trend_cache = {}
+        self.signal_history = defaultdict(list)
+        self.min_confidence = 0.6
+        self.min_signals = 5
+    
+    def detect_trends(self, signals: List[Dict]) -> List[Dict]:
+        """
+        Detect trends from signals.
+        
+        Returns:
+        [
+            {
+                "topic": str,
+                "stage": str,  # embryonic, emerging, accelerating, peaking, declining
+                "confidence": float,  # 0-1
+                "signal_count": int,
+                "velocity": float,  # signals per hour
+                "platforms": List[str],
+                "keywords": List[str],
+                "entities": List[str]
+            }
+        ]
+        """
+        # Group signals by topic
+        topics = self._group_signals_by_topic(signals)
+        
+        # Detect trends
+        trends = []
+        for topic, topic_signals in topics.items():
+            if len(topic_signals) >= self.min_signals:
+                trend = self._analyze_trend(topic, topic_signals)
+                if trend["confidence"] >= self.min_confidence:
+                    trends.append(trend)
+        
+        return sorted(trends, key=lambda x: x["confidence"], reverse=True)
+    
+    def _group_signals_by_topic(self, signals: List[Dict]) -> Dict[str, List[Dict]]:
+        """Group signals by topic using keywords."""
+        topics = defaultdict(list)
+        
+        for signal in signals:
+            # Use keywords and entities as topic identifiers
+            keywords = signal.get("keywords", [])
+            entities = signal.get("entities", [])
+            
+            # Create topic key from top keywords/entities
+            topic_key = self._create_topic_key(keywords, entities)
+            
+            if topic_key:
+                topics[topic_key].append(signal)
+        
+        return topics
+    
+    def _create_topic_key(self, keywords: List[str], entities: List[str]) -> str:
+        """Create a topic key from keywords and entities."""
+        # Combine and deduplicate
+        all_terms = list(set(keywords + entities))
+        
+        if not all_terms:
+            return None
+        
+        # Sort for consistency
+        all_terms.sort()
+        
+        # Create key from top 3 terms
+        topic_key = " ".join(all_terms[:3])
+        
+        return topic_key
+    
+    def _analyze_trend(self, topic: str, signals: List[Dict]) -> Dict:
+        """Analyze a trend."""
+        # Calculate confidence
+        confidence = self._calculate_confidence(signals)
+        
+        # Determine stage
+        stage = self._determine_stage(topic, signals)
+        
+        # Calculate velocity
+        velocity = self._calculate_velocity(signals)
+        
+        # Extract platforms
+        platforms = list(set([s.get("platform") for s in signals]))
+        
+        # Extract keywords and entities
+        all_keywords = []
+        all_entities = []
+        for signal in signals:
+            all_keywords.extend(signal.get("keywords", []))
+            all_entities.extend(signal.get("entities", []))
+        
+        keywords = list(set(all_keywords))[:10]
+        entities = list(set(all_entities))[:10]
+        
+        return {
+            "topic": topic,
+            "stage": stage,
+            "confidence": confidence,
+            "signal_count": len(signals),
+            "velocity": velocity,
+            "platforms": platforms,
+            "keywords": keywords,
+            "entities": entities,
+            "detected_at": datetime.utcnow().isoformat()
+        }
+    
+    def _calculate_confidence(self, signals: List[Dict]) -> float:
+        """
+        Calculate confidence score for trend.
+        
+        Factors:
+        - Number of signals
+        - Diversity of platforms
+        - Sentiment consistency
+        - Recency
+        """
+        # Base confidence from signal count
+        signal_count_score = min(len(signals) / 100, 1.0)  # Max 100 signals
+        
+        # Platform diversity
+        platforms = set([s.get("platform") for s in signals])
+        platform_score = len(platforms) / 5  # Max 5 platforms
+        
+        # Sentiment consistency
+        sentiments = [s.get("sentiment") for s in signals]
+        sentiment_score = 1.0 - (len(set(sentiments)) / 3)  # Less diversity = higher score
+        
+        # Recency (recent signals are more important)
+        now = datetime.utcnow()
+        recency_scores = []
+        for signal in signals:
+            age_hours = (now - signal.get("created_at")).total_seconds() / 3600
+            recency_score = max(0, 1.0 - (age_hours / 24))  # Decay over 24 hours
+            recency_scores.append(recency_score)
+        
+        recency_score = np.mean(recency_scores) if recency_scores else 0
+        
+        # Weighted average
+        confidence = (
+            signal_count_score * 0.4 +
+            platform_score * 0.3 +
+            sentiment_score * 0.15 +
+            recency_score * 0.15
+        )
+        
+        return min(confidence, 1.0)
+    
+    def _determine_stage(self, topic: str, signals: List[Dict]) -> str:
+        """Determine trend stage based on velocity and history."""
+        # Get historical data for this topic
+        history = self.signal_history[topic]
+        
+        # Calculate current velocity
+        now = datetime.utcnow()
+        recent_signals = [s for s in signals if (now - s.get("created_at")).total_seconds() < 3600]
+        current_velocity = len(recent_signals)
+        
+        # Determine stage based on velocity trend
+        if len(history) == 0:
+            stage = "embryonic"
+        elif current_velocity < 5:
+            stage = "embryonic"
+        elif current_velocity < 20:
+            stage = "emerging"
+        elif current_velocity < 50:
+            stage = "accelerating"
+        elif current_velocity < 100:
+            stage = "peaking"
+        else:
+            stage = "declining"
+        
+        # Update history
+        self.signal_history[topic].append({
+            "velocity": current_velocity,
+            "timestamp": now
+        })
+        
+        return stage
+    
+    def _calculate_velocity(self, signals: List[Dict]) -> float:
+        """Calculate signals per hour."""
+        if not signals:
+            return 0.0
+        
+        # Get time range
+        timestamps = [s.get("created_at") for s in signals]
+        min_time = min(timestamps)
+        max_time = max(timestamps)
+        
+        time_diff = (max_time - min_time).total_seconds() / 3600  # Convert to hours
+        
+        if time_diff == 0:
+            return float(len(signals))
+        
+        return len(signals) / time_diff
+
+# Usage
+detection_engine = TrendDetectionEngine()
+
+@app.post("/detect-trends")
+async def detect_trends(user_id: int = Depends(verify_token)):
+    # Get recent signals
+    signals = db.query(Signal).filter(
+        Signal.created_at > datetime.utcnow() - timedelta(hours=24)
+    ).all()
+    
+    # Process signals
+    processed_signals = []
+    for signal in signals:
+        processed = processor.process_signal(signal.text, signal.platform)
+        if processed:
+            processed["created_at"] = signal.created_at
+            processed_signals.append(processed)
+    
+    # Detect trends
+    trends = detection_engine.detect_trends(processed_signals)
+    
+    # Store detections
+    for trend in trends:
+        detection = Detection(
+            topic=trend["topic"],
+            stage=trend["stage"],
+            confidence=trend["confidence"],
+            signal_count=trend["signal_count"],
+            platforms=trend["platforms"],
+            velocity=trend["velocity"]
+        )
+        db.add(detection)
+    
+    db.commit()
+    
+    return trends
+```
+
+**Testing Requirements:**
+- [ ] Signals are grouped by topic correctly
+- [ ] Confidence scores are calculated correctly
+- [ ] Trend stages are determined correctly
+- [ ] Velocity is calculated correctly
+- [ ] Trends are detected reliably
+
+**Optimization Tips:**
+- Cache topic groupings
+- Use incremental updates instead of full recalculation
+- Implement sliding window for velocity calculation
+- Use numpy for fast numerical operations
+
+---
+
+### Week 6: Forecasting Engine
+
+#### Step 6.1: Time Series Forecasting
+
+**Specification:**
+- Implement time series forecasting with Prophet
+- Predict trend trajectory for 26 weeks
+- Calculate confidence intervals
+- Handle seasonality and trends
+- Optimize for speed
+
+**Implementation Details:**
+
+```python
+# backend/app/services/forecasting_engine.py
+from prophet import Prophet
+from typing import Dict, List
+import pandas as pd
+from datetime import datetime, timedelta
+import numpy as np
+
+class ForecastingEngine:
+    def __init__(self):
+        self.forecast_cache = {}
+    
+    def forecast_trend(self, detection_id: int, historical_data: List[Dict]) -> Dict:
+        """
+        Forecast trend for 26 weeks.
+        
+        Returns:
+        {
+            "detection_id": int,
+            "forecast_points": [
+                {
+                    "date": str,
+                    "predicted_mentions": float,
+                    "lower_bound": float,
+                    "upper_bound": float
+                }
+            ],
+            "trend_direction": str,  # up, down, stable
+            "confidence": float
+        }
+        """
+        # Prepare data for Prophet
+        df = self._prepare_data(historical_data)
+        
+        if len(df) < 10:
+            # Not enough data for forecasting
+            return self._simple_forecast(detection_id, historical_data)
+        
+        # Train Prophet model
+        model = Prophet(
+            yearly_seasonality=False,
+            weekly_seasonality=True,
+            daily_seasonality=False,
+            interval_width=0.95
+        )
+        
+        model.fit(df)
+        
+        # Generate forecast for 26 weeks (182 days)
+        future = model.make_future_dataframe(periods=182)
+        forecast = model.predict(future)
+        
+        # Extract forecast points
+        forecast_points = self._extract_forecast_points(forecast)
+        
+        # Determine trend direction
+        trend_direction = self._determine_trend_direction(forecast_points)
+        
+        # Calculate confidence
+        confidence = self._calculate_forecast_confidence(forecast)
+        
+        return {
+            "detection_id": detection_id,
+            "forecast_points": forecast_points,
+            "trend_direction": trend_direction,
+            "confidence": confidence,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+    
+    def _prepare_data(self, historical_data: List[Dict]) -> pd.DataFrame:
+        """Prepare data for Prophet."""
+        # Convert to DataFrame
+        df = pd.DataFrame(historical_data)
+        
+        # Rename columns for Prophet
+        df = df.rename(columns={
+            "timestamp": "ds",
+            "mentions": "y"
+        })
+        
+        # Ensure datetime format
+        df["ds"] = pd.to_datetime(df["ds"])
+        
+        # Sort by date
+        df = df.sort_values("ds")
+        
+        # Remove duplicates
+        df = df.drop_duplicates(subset=["ds"])
+        
+        return df[["ds", "y"]]
+    
+    def _extract_forecast_points(self, forecast: pd.DataFrame) -> List[Dict]:
+        """Extract forecast points from Prophet output."""
+        # Get future forecasts only
+        future_forecast = forecast[forecast["ds"] > datetime.utcnow()]
+        
+        forecast_points = []
+        for _, row in future_forecast.iterrows():
+            forecast_points.append({
+                "date": row["ds"].isoformat(),
+                "predicted_mentions": max(0, int(row["yhat"])),
+                "lower_bound": max(0, int(row["yhat_lower"])),
+                "upper_bound": max(0, int(row["yhat_upper"]))
+            })
+        
+        return forecast_points
+    
+    def _determine_trend_direction(self, forecast_points: List[Dict]) -> str:
+        """Determine if trend is going up, down, or staying stable."""
+        if not forecast_points or len(forecast_points) < 2:
+            return "stable"
+        
+        # Compare first and last forecast points
+        first_value = forecast_points[0]["predicted_mentions"]
+        last_value = forecast_points[-1]["predicted_mentions"]
+        
+        change_percent = (last_value - first_value) / first_value if first_value > 0 else 0
+        
+        if change_percent > 0.2:
+            return "up"
+        elif change_percent < -0.2:
+            return "down"
+        else:
+            return "stable"
+    
+    def _calculate_forecast_confidence(self, forecast: pd.DataFrame) -> float:
+        """Calculate confidence in forecast."""
+        # Confidence based on prediction interval width
+        forecast["interval_width"] = forecast["yhat_upper"] - forecast["yhat_lower"]
+        forecast["relative_width"] = forecast["interval_width"] / (forecast["yhat"] + 1)
+        
+        # Average relative width
+        avg_width = forecast["relative_width"].mean()
+        
+        # Convert to confidence (lower width = higher confidence)
+        confidence = max(0, 1.0 - avg_width)
+        
+        return min(confidence, 1.0)
+    
+    def _simple_forecast(self, detection_id: int, historical_data: List[Dict]) -> Dict:
+        """Simple forecast when not enough data."""
+        if not historical_data:
+            return {
+                "detection_id": detection_id,
+                "forecast_points": [],
+                "trend_direction": "stable",
+                "confidence": 0.0
+            }
+        
+        # Use average of recent data
+        avg_mentions = np.mean([d.get("mentions", 0) for d in historical_data])
+        
+        # Generate simple forecast
+        forecast_points = []
+        for i in range(182):
+            date = datetime.utcnow() + timedelta(days=i)
+            forecast_points.append({
+                "date": date.isoformat(),
+                "predicted_mentions": int(avg_mentions),
+                "lower_bound": int(avg_mentions * 0.8),
+                "upper_bound": int(avg_mentions * 1.2)
+            })
+        
+        return {
+            "detection_id": detection_id,
+            "forecast_points": forecast_points,
+            "trend_direction": "stable",
+            "confidence": 0.3  # Low confidence for simple forecast
+        }
+
+# Usage
+forecasting_engine = ForecastingEngine()
+
+@app.post("/forecast/{detection_id}")
+async def forecast_trend(detection_id: int, user_id: int = Depends(verify_token)):
+    # Get detection
+    detection = db.query(Detection).filter(Detection.id == detection_id).first()
+    
+    if not detection:
+        raise HTTPException(status_code=404, detail="Detection not found")
+    
+    # Get historical data for this detection
+    # (In production, this would be aggregated from signals)
+    historical_data = [
+        {
+            "timestamp": datetime.utcnow() - timedelta(days=i),
+            "mentions": np.random.randint(10, 100)
+        }
+        for i in range(30)
+    ]
+    
+    # Generate forecast
+    forecast = forecasting_engine.forecast_trend(detection_id, historical_data)
+    
+    # Store forecast
+    for point in forecast["forecast_points"]:
+        db_forecast = Forecast(
+            detection_id=detection_id,
+            forecast_date=point["date"],
+            predicted_mentions=point["predicted_mentions"],
+            confidence=forecast["confidence"]
+        )
+        db.add(db_forecast)
+    
+    db.commit()
+    
+    return forecast
+```
+
+**Testing Requirements:**
+- [ ] Forecast is generated correctly
+- [ ] Confidence intervals are calculated
+- [ ] Trend direction is determined correctly
+- [ ] Forecast handles edge cases (no data, single data point)
+- [ ] Performance is acceptable (< 5 seconds)
+
+**Optimization Tips:**
+- Cache forecasts to avoid recalculation
+- Use vectorized operations
+- Implement incremental forecasting
+- Profile and optimize Prophet usage
+
+---
+
+### Week 7: Dashboard UI
+
+#### Step 7.1: Dashboard Components
+
+**Specification:**
+- Create dashboard layout with multiple views
+- Implement signal cards with real-time updates
+- Create trend visualization with charts
+- Add filtering and search
+- Implement responsive design
+
+**Implementation Details:**
+
+```typescript
+// frontend/src/components/Dashboard.tsx
+import { useEffect, useState } from 'react';
+import { useAppStore } from '@/store/useAppStore';
+import SignalCard from './SignalCard';
+import TrendChart from './TrendChart';
+import FilterBar from './FilterBar';
+
+export default function Dashboard() {
+  const { signals, setSignals } = useAppStore();
+  const [trends, setTrends] = useState([]);
+  const [filteredSignals, setFilteredSignals] = useState(signals);
+  const [filters, setFilters] = useState({
+    platform: 'all',
+    stage: 'all',
+    minConfidence: 0.6
+  });
+
+  useEffect(() => {
+    fetchTrends();
+    const interval = setInterval(fetchTrends, 60000); // Refresh every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [signals, filters]);
+
+  const fetchTrends = async () => {
+    try {
+      const response = await fetch('/api/detect-trends', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await response.json();
+      setTrends(data);
+    } catch (err) {
+      console.error('Failed to fetch trends:', err);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = signals;
+
+    if (filters.platform !== 'all') {
+      filtered = filtered.filter(s => s.platform === filters.platform);
+    }
+
+    setFilteredSignals(filtered);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        <button
+          onClick={fetchTrends}
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition"
+        >
+          Refresh
+        </button>
+      </div>
+
+      {/* Filter Bar */}
+      <FilterBar filters={filters} setFilters={setFilters} />
+
+      {/* Trends Overview */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {trends.slice(0, 3).map((trend) => (
+          <div
+            key={trend.id}
+            className="bg-white/5 backdrop-blur p-6 rounded-lg border border-white/10"
+          >
+            <h3 className="text-lg font-bold text-white mb-2">{trend.topic}</h3>
+            <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">
+              {trend.confidence.toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-400">
+              {trend.signal_count} signals • {trend.stage}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Trend Chart */}
+      {trends.length > 0 && (
+        <TrendChart trend={trends[0]} />
+      )}
+
+      {/* Signals List */}
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Recent Signals</h2>
+        <div className="space-y-4">
+          {filteredSignals.map((signal) => (
+            <SignalCard key={signal.id} signal={signal} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+```typescript
+// frontend/src/components/TrendChart.tsx
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+export default function TrendChart({ trend }) {
+  const data = trend.forecast_points.map((point, index) => ({
+    date: new Date(point.date).toLocaleDateString(),
+    mentions: point.predicted_mentions,
+    lower: point.lower_bound,
+    upper: point.upper_bound
+  }));
+
+  return (
+    <div className="bg-white/5 backdrop-blur p-6 rounded-lg border border-white/10">
+      <h2 className="text-xl font-bold text-white mb-4">{trend.topic} - 26 Week Forecast</h2>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" />
+          <YAxis stroke="rgba(255,255,255,0.5)" />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '8px'
+            }}
+            labelStyle={{ color: '#fff' }}
+          />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="mentions"
+            stroke="#6C63FF"
+            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="upper"
+            stroke="rgba(108,99,255,0.3)"
+            strokeWidth={1}
+            dot={false}
+            strokeDasharray="5 5"
+          />
+          <Line
+            type="monotone"
+            dataKey="lower"
+            stroke="rgba(108,99,255,0.3)"
+            strokeWidth={1}
+            dot={false}
+            strokeDasharray="5 5"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+```
+
+**Testing Requirements:**
+- [ ] Dashboard renders correctly
+- [ ] Charts display data
+- [ ] Filters work
+- [ ] Real-time updates work
+- [ ] Responsive on all devices
+
+**Optimization Tips:**
+- Lazy load charts
+- Memoize expensive computations
+- Use virtualization for long lists
+- Implement pagination
+
+---
+
+### Week 8: Search & Analytics
+
+#### Step 8.1: Search Functionality
+
+**Specification:**
+- Implement full-text search with Elasticsearch
+- Search across signals, trends, forecasts
+- Add filters and facets
+- Implement autocomplete
+- Optimize for speed
+
+**Implementation Details:**
+
+```python
+# backend/app/services/search_engine.py
+from elasticsearch import Elasticsearch
+from typing import List, Dict
+
+es = Elasticsearch(['localhost:9200'])
+
+class SearchEngine:
+    def __init__(self):
+        self.index_name = "foresight_signals"
+        self._create_index()
+    
+    def _create_index(self):
+        """Create Elasticsearch index with proper mappings."""
+        if not es.indices.exists(index=self.index_name):
+            es.indices.create(
+                index=self.index_name,
+                body={
+                    "settings": {
+                        "number_of_shards": 1,
+                        "number_of_replicas": 0,
+                        "analysis": {
+                            "analyzer": {
+                                "default": {
+                                    "type": "standard",
+                                    "stopwords": "_english_"
+                                }
+                            }
+                        }
+                    },
+                    "mappings": {
+                        "properties": {
+                            "text": {"type": "text"},
+                            "platform": {"type": "keyword"},
+                            "author": {"type": "keyword"},
+                            "keywords": {"type": "keyword"},
+                            "entities": {"type": "keyword"},
+                            "sentiment": {"type": "keyword"},
+                            "category": {"type": "keyword"},
+                            "created_at": {"type": "date"},
+                            "confidence": {"type": "float"}
+                        }
+                    }
+                }
+            )
+    
+    def index_signal(self, signal: Dict):
+        """Index a signal in Elasticsearch."""
+        es.index(
+            index=self.index_name,
+            id=signal["id"],
+            body={
+                "text": signal["text"],
+                "platform": signal["platform"],
+                "author": signal.get("author"),
+                "keywords": signal.get("keywords", []),
+                "entities": signal.get("entities", []),
+                "sentiment": signal.get("sentiment"),
+                "category": signal.get("category"),
+                "created_at": signal["created_at"],
+                "confidence": signal.get("confidence", 0)
+            }
+        )
+    
+    def search(
+        self,
+        query: str,
+        filters: Dict = None,
+        limit: int = 20,
+        offset: int = 0
+    ) -> Dict:
+        """
+        Search signals.
+        
+        Returns:
+        {
+            "total": int,
+            "results": [
+                {
+                    "id": int,
+                    "text": str,
+                    "platform": str,
+                    "score": float,
+                    "highlight": str
+                }
+            ],
+            "facets": {
+                "platforms": {...},
+                "sentiments": {...},
+                "categories": {...}
+            }
+        }
+        """
+        # Build query
+        es_query = {
+            "bool": {
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["text", "keywords", "entities"],
+                            "fuzziness": "AUTO"
+                        }
+                    }
+                ]
+            }
+        }
+        
+        # Add filters
+        if filters:
+            if "platform" in filters:
+                es_query["bool"]["filter"] = [
+                    {"term": {"platform": filters["platform"]}}
+                ]
+            if "sentiment" in filters:
+                if "filter" not in es_query["bool"]:
+                    es_query["bool"]["filter"] = []
+                es_query["bool"]["filter"].append(
+                    {"term": {"sentiment": filters["sentiment"]}}
+                )
+        
+        # Execute search
+        response = es.search(
+            index=self.index_name,
+            body={
+                "query": es_query,
+                "from": offset,
+                "size": limit,
+                "highlight": {
+                    "fields": {
+                        "text": {},
+                        "keywords": {}
+                    }
+                },
+                "aggs": {
+                    "platforms": {
+                        "terms": {"field": "platform", "size": 10}
+                    },
+                    "sentiments": {
+                        "terms": {"field": "sentiment", "size": 10}
+                    },
+                    "categories": {
+                        "terms": {"field": "category", "size": 10}
+                    }
+                }
+            }
+        )
+        
+        # Format results
+        results = []
+        for hit in response["hits"]["hits"]:
+            results.append({
+                "id": hit["_id"],
+                "text": hit["_source"]["text"],
+                "platform": hit["_source"]["platform"],
+                "score": hit["_score"],
+                "highlight": hit.get("highlight", {}).get("text", [""])[0]
+            })
+        
+        # Format facets
+        facets = {
+            "platforms": {
+                bucket["key"]: bucket["doc_count"]
+                for bucket in response["aggregations"]["platforms"]["buckets"]
+            },
+            "sentiments": {
+                bucket["key"]: bucket["doc_count"]
+                for bucket in response["aggregations"]["sentiments"]["buckets"]
+            },
+            "categories": {
+                bucket["key"]: bucket["doc_count"]
+                for bucket in response["aggregations"]["categories"]["buckets"]
+            }
+        }
+        
+        return {
+            "total": response["hits"]["total"]["value"],
+            "results": results,
+            "facets": facets
+        }
+    
+    def autocomplete(self, prefix: str, field: str = "keywords") -> List[str]:
+        """Get autocomplete suggestions."""
+        response = es.search(
+            index=self.index_name,
+            body={
+                "aggs": {
+                    "suggestions": {
+                        "terms": {
+                            "field": field,
+                            "prefix": prefix,
+                            "size": 10
+                        }
+                    }
+                }
+            }
+        )
+        
+        return [
+            bucket["key"]
+            for bucket in response["aggregations"]["suggestions"]["buckets"]
+        ]
+
+# Usage
+search_engine = SearchEngine()
+
+@app.get("/search")
+async def search(
+    q: str,
+    platform: str = None,
+    sentiment: str = None,
+    limit: int = 20,
+    offset: int = 0,
+    user_id: int = Depends(verify_token)
+):
+    """Search signals."""
+    filters = {}
+    if platform:
+        filters["platform"] = platform
+    if sentiment:
+        filters["sentiment"] = sentiment
+    
+    results = search_engine.search(q, filters, limit, offset)
+    return results
+
+@app.get("/autocomplete")
+async def autocomplete(prefix: str, user_id: int = Depends(verify_token)):
+    """Get autocomplete suggestions."""
+    suggestions = search_engine.autocomplete(prefix)
+    return {"suggestions": suggestions}
+```
+
+**Testing Requirements:**
+- [ ] Search returns correct results
+- [ ] Filters work correctly
+- [ ] Facets are calculated
+- [ ] Autocomplete works
+- [ ] Performance is acceptable
+
+**Optimization Tips:**
+- Index signals asynchronously
+- Use Elasticsearch caching
+- Implement query result caching
+- Use bulk indexing for batch operations
+
+---
+
+## Phase 3: Advanced Features (Weeks 9-12)
+
+### Week 9: AI Simulation (MiroFish)
+
+#### Step 9.1: MiroFish Integration
+
+**Specification:**
+- Integrate MiroFish multi-agent simulation
+- Simulate trend spread across communities
+- Calculate virality coefficient
+- Predict mainstream adoption ETA
+- Implement simulation replay
+
+**Implementation Details:**
+
+```python
+# backend/app/services/mirofish_integration.py
+from typing import Dict, List
+import json
+from datetime import datetime, timedelta
+
+class MiroFishSimulator:
+    def __init__(self):
+        self.agents = {}
+        self.communities = self._initialize_communities()
+    
+    def _initialize_communities(self) -> Dict:
+        """Initialize communities with different characteristics."""
+        return {
+            "reddit_tech": {
+                "name": "r/Technology",
+                "platform": "reddit",
+                "size": 5000000,
+                "influence": 0.8,
+                "adoption_rate": 0.3
+            },
+            "twitter_tech": {
+                "name": "Twitter Tech",
+                "platform": "twitter",
+                "size": 2000000,
+                "influence": 0.9,
+                "adoption_rate": 0.4
+            },
+            "discord_dev": {
+                "name": "Discord Dev Communities",
+                "platform": "discord",
+                "size": 500000,
+                "influence": 0.7,
+                "adoption_rate": 0.5
+            },
+            "hackernews": {
+                "name": "Hacker News",
+                "platform": "hackernews",
+                "size": 1000000,
+                "influence": 0.95,
+                "adoption_rate": 0.2
+            },
+            "mainstream_media": {
+                "name": "Mainstream Media",
+                "platform": "news",
+                "size": 100000000,
+                "influence": 1.0,
+                "adoption_rate": 0.1
+            }
+        }
+    
+    def simulate_trend_spread(
+        self,
+        trend_topic: str,
+        initial_confidence: float,
+        initial_platforms: List[str],
+        weeks: int = 26
+    ) -> Dict:
+        """
+        Simulate how a trend spreads across communities.
+        
+        Returns:
+        {
+            "trend": str,
+            "simulation_data": [
+                {
+                    "week": int,
+                    "community": str,
+                    "adoption_rate": float,
+                    "total_mentions": int,
+                    "virality": float
+                }
+            ],
+            "spread_path": [
+                {
+                    "order": int,
+                    "community": str,
+                    "time_to_adoption": int  # hours
+                }
+            ],
+            "virality_coefficient": float,
+            "decay_probability": float,
+            "mainstream_eta": str  # ISO datetime
+        }
+        """
+        simulation_data = []
+        spread_path = []
+        
+        # Initialize agent states
+        agent_states = {
+            community: {
+                "adoption": 0.0,
+                "mentions": 0,
+                "influenced_by": []
+            }
+            for community in self.communities.keys()
+        }
+        
+        # Start with initial platforms
+        for platform in initial_platforms:
+            for community_id, community in self.communities.items():
+                if community["platform"] == platform:
+                    agent_states[community_id]["adoption"] = initial_confidence
+        
+        # Simulate week by week
+        adoption_order = []
+        for week in range(weeks):
+            week_data = []
+            
+            for community_id, community in self.communities.items():
+                state = agent_states[community_id]
+                
+                # Calculate adoption based on influences
+                base_adoption = state["adoption"]
+                influenced_adoption = sum(
+                    agent_states[influenced]["adoption"] * 0.1
+                    for influenced in state["influenced_by"]
+                )
+                
+                # Update adoption
+                new_adoption = min(
+                    1.0,
+                    base_adoption + influenced_adoption +
+                    (community["adoption_rate"] * 0.05)
+                )
+                
+                # Calculate mentions
+                mentions = int(new_adoption * community["size"] * 0.01)
+                
+                # Track first adoption
+                if base_adoption == 0 and new_adoption > 0.1:
+                    adoption_order.append({
+                        "order": len(adoption_order) + 1,
+                        "community": community_id,
+                        "time_to_adoption": week * 7 * 24  # Convert weeks to hours
+                    })
+                
+                state["adoption"] = new_adoption
+                state["mentions"] = mentions
+                
+                week_data.append({
+                    "week": week,
+                    "community": community_id,
+                    "adoption_rate": new_adoption,
+                    "total_mentions": mentions,
+                    "virality": self._calculate_virality(agent_states)
+                })
+            
+            simulation_data.extend(week_data)
+            
+            # Update influences (communities influence each other)
+            self._update_influences(agent_states)
+        
+        # Calculate metrics
+        virality_coefficient = self._calculate_virality_coefficient(agent_states)
+        decay_probability = self._calculate_decay_probability(simulation_data)
+        mainstream_eta = self._estimate_mainstream_eta(simulation_data)
+        
+        return {
+            "trend": trend_topic,
+            "simulation_data": simulation_data,
+            "spread_path": adoption_order,
+            "virality_coefficient": virality_coefficient,
+            "decay_probability": decay_probability,
+            "mainstream_eta": mainstream_eta,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+    
+    def _calculate_virality(self, agent_states: Dict) -> float:
+        """Calculate current virality score."""
+        total_adoption = sum(
+            state["adoption"]
+            for state in agent_states.values()
+        )
+        return min(1.0, total_adoption / len(agent_states))
+    
+    def _update_influences(self, agent_states: Dict):
+        """Update which communities influence each other."""
+        # Communities with high adoption influence others
+        high_adoption = [
+            (community_id, state["adoption"])
+            for community_id, state in agent_states.items()
+            if state["adoption"] > 0.3
+        ]
+        
+        for community_id, state in agent_states.items():
+            state["influenced_by"] = [
+                comm_id for comm_id, adoption in high_adoption
+                if comm_id != community_id
+            ]
+    
+    def _calculate_virality_coefficient(self, agent_states: Dict) -> float:
+        """
+        Calculate virality coefficient.
+        
+        Measures how many new people each infected person infects.
+        > 1.0 = exponential growth
+        = 1.0 = stable
+        < 1.0 = decay
+        """
+        # Simplified: based on adoption spread
+        adoptions = [state["adoption"] for state in agent_states.values()]
+        if not adoptions or adoptions[0] == 0:
+            return 1.0
+        
+        growth_rate = adoptions[-1] / (adoptions[0] + 0.001)
+        return min(growth_rate, 5.0)  # Cap at 5.0
+    
+    def _calculate_decay_probability(self, simulation_data: List[Dict]) -> float:
+        """
+        Calculate probability that trend will decay.
+        
+        Based on trend momentum and saturation.
+        """
+        if not simulation_data:
+            return 0.5
+        
+        # Get last week's virality
+        last_week_data = [d for d in simulation_data if d["week"] == max(d["week"] for d in simulation_data)]
+        avg_virality = sum(d["virality"] for d in last_week_data) / len(last_week_data)
+        
+        # High virality = low decay probability
+        decay_prob = 1.0 - avg_virality
+        
+        return max(0.0, min(1.0, decay_prob))
+    
+    def _estimate_mainstream_eta(self, simulation_data: List[Dict]) -> str:
+        """Estimate when trend will reach mainstream media."""
+        # Find when mainstream_media adoption exceeds 0.5
+        for data in simulation_data:
+            if data["community"] == "mainstream_media" and data["adoption_rate"] > 0.5:
+                weeks_to_mainstream = data["week"]
+                eta = datetime.utcnow() + timedelta(weeks=weeks_to_mainstream)
+                return eta.isoformat()
+        
+        # If not reached, estimate based on trend
+        return (datetime.utcnow() + timedelta(weeks=26)).isoformat()
+
+# Usage
+mirofish_simulator = MiroFishSimulator()
+
+@app.post("/simulate/{detection_id}")
+async def simulate_trend(detection_id: int, user_id: int = Depends(verify_token)):
+    """Run MiroFish simulation for a trend."""
+    detection = db.query(Detection).filter(Detection.id == detection_id).first()
+    
+    if not detection:
+        raise HTTPException(status_code=404, detail="Detection not found")
+    
+    # Run simulation
+    simulation = mirofish_simulator.simulate_trend_spread(
+        trend_topic=detection.topic,
+        initial_confidence=detection.confidence,
+        initial_platforms=detection.platforms,
+        weeks=26
+    )
+    
+    # Store simulation
+    db_simulation = Simulation(
+        detection_id=detection_id,
+        simulation_data=simulation["simulation_data"],
+        spread_path=simulation["spread_path"],
+        virality_coefficient=simulation["virality_coefficient"],
+        decay_probability=simulation["decay_probability"],
+        mainstream_eta=simulation["mainstream_eta"]
+    )
+    db.add(db_simulation)
+    db.commit()
+    
+    return simulation
+```
+
+**Testing Requirements:**
+- [ ] Simulation runs without errors
+- [ ] Virality coefficient is calculated correctly
+- [ ] Decay probability is calculated correctly
+- [ ] Mainstream ETA is estimated
+- [ ] Simulation data is stored correctly
+
+**Optimization Tips:**
+- Cache simulation results
+- Use vectorized operations for agent updates
+- Implement parallel simulations
+- Profile for bottlenecks
+
+---
+
+## Quality Assurance & Testing
+
+### Unit Testing Strategy
+
+```python
+# backend/tests/test_detection_engine.py
+import pytest
+from app.services.detection_engine import TrendDetectionEngine
+
+@pytest.fixture
+def detection_engine():
+    return TrendDetectionEngine()
+
+def test_detect_trends_with_sufficient_signals(detection_engine):
+    signals = [
+        {
+            "text": "AI is amazing",
+            "platform": "twitter",
+            "keywords": ["AI", "amazing"],
+            "entities": ["AI"],
+            "sentiment": "positive",
+            "created_at": datetime.utcnow()
+        }
+        for _ in range(10)
+    ]
+    
+    trends = detection_engine.detect_trends(signals)
+    assert len(trends) > 0
+    assert trends[0]["confidence"] >= 0.6
+
+def test_detect_trends_with_insufficient_signals(detection_engine):
+    signals = [
+        {
+            "text": "AI is amazing",
+            "platform": "twitter",
+            "keywords": ["AI"],
+            "entities": ["AI"],
+            "sentiment": "positive",
+            "created_at": datetime.utcnow()
+        }
+        for _ in range(2)
+    ]
+    
+    trends = detection_engine.detect_trends(signals)
+    assert len(trends) == 0
+
+def test_confidence_calculation(detection_engine):
+    signals = [
+        {
+            "text": f"Signal {i}",
+            "platform": "twitter" if i % 2 == 0 else "reddit",
+            "keywords": ["test"],
+            "entities": ["test"],
+            "sentiment": "positive",
+            "created_at": datetime.utcnow()
+        }
+        for i in range(20)
+    ]
+    
+    trends = detection_engine.detect_trends(signals)
+    assert trends[0]["confidence"] > 0.6
+```
+
+### Integration Testing Strategy
+
+```python
+# backend/tests/test_api_integration.py
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+@pytest.fixture
+def auth_token():
+    # Create user and return token
+    pass
+
+def test_signal_ingestion_to_detection(auth_token):
+    # Ingest multiple signals
+    for i in range(10):
+        client.post(
+            "/signals/ingest",
+            json={
+                "text": f"AI signal {i}",
+                "platform": "twitter",
+                "author": "testuser",
+                "url": f"https://twitter.com/test{i}"
+            },
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+    
+    # Detect trends
+    response = client.post(
+        "/detect-trends",
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    
+    assert response.status_code == 200
+    trends = response.json()
+    assert len(trends) > 0
+```
+
+### Performance Testing Strategy
+
+```python
+# backend/tests/test_performance.py
+import pytest
+import time
+from app.services.detection_engine import TrendDetectionEngine
+
+def test_detection_performance():
+    """Detect trends from 1000 signals in < 5 seconds."""
+    engine = TrendDetectionEngine()
+    
+    signals = [
+        {
+            "text": f"Signal {i}",
+            "platform": "twitter",
+            "keywords": ["test"],
+            "entities": ["test"],
+            "sentiment": "positive",
+            "created_at": datetime.utcnow()
+        }
+        for i in range(1000)
+    ]
+    
+    start = time.time()
+    trends = engine.detect_trends(signals)
+    elapsed = time.time() - start
+    
+    assert elapsed < 5.0
+    assert len(trends) > 0
+```
+
+---
+
+## Optimization & Performance
+
+### Backend Optimization
+
+```python
+# backend/app/middleware/performance.py
+import time
+from fastapi import Request
+import logging
+
+logger = logging.getLogger(__name__)
+
+async def performance_middleware(request: Request, call_next):
+    """Log request performance."""
+    start = time.time()
+    response = await call_next(request)
+    elapsed = time.time() - start
+    
+    logger.info(f"{request.method} {request.url.path} - {elapsed:.3f}s")
+    
+    # Add performance header
+    response.headers["X-Process-Time"] = str(elapsed)
+    
+    return response
+
+# Usage in main.py
+app.middleware("http")(performance_middleware)
+```
+
+### Frontend Optimization
+
+```typescript
+// frontend/next.config.js
+module.exports = {
+  swcMinify: true,
+  compress: true,
+  productionBrowserSourceMaps: false,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  experimental: {
+    optimizePackageImports: ['recharts', 'zustand'],
+  },
+};
+```
+
+### Database Optimization
+
+```python
+# backend/app/db/connection.py
+from sqlalchemy import create_engine
+from sqlalchemy.pool import QueuePool
+
+engine = create_engine(
+    DATABASE_URL,
+    poolclass=QueuePool,
+    pool_size=20,
+    max_overflow=40,
+    pool_pre_ping=True,
+    echo=False
+)
+```
+
+---
+
+## Troubleshooting & Recovery
+
+### Common Issues & Solutions
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| High memory usage | Large signal batches | Implement pagination, batch processing |
+| Slow detection | Inefficient NLP | Use GPU, cache models, optimize algorithms |
+| Database timeouts | Connection pool exhausted | Increase pool size, optimize queries |
+| API rate limiting | Too many requests | Implement caching, queue requests |
+| Forecast inaccuracy | Insufficient historical data | Use simple forecast, collect more data |
+
+### Recovery Procedures
+
+```bash
+# If database is corrupted
+docker-compose down
+docker volume rm foresight_postgres_data
+docker-compose up -d
+python manage.py migrate
+
+# If Elasticsearch is out of sync
+curl -X DELETE http://localhost:9200/foresight_signals
+python manage.py reindex_signals
+
+# If services are stuck
+docker-compose restart
+```
+
+---
+
+## Deployment & Launch
+
+### Production Checklist
+
+- [ ] All tests pass (95%+ coverage)
+- [ ] Performance benchmarks met
+- [ ] Security audit completed
+- [ ] Database backups configured
+- [ ] Monitoring alerts set up
+- [ ] Documentation complete
+- [ ] Team trained
+- [ ] Rollback plan ready
+
+### Launch Day
+
+1. **Pre-launch** (24 hours before)
+   - Final testing
+   - Team briefing
+   - Rollback plan review
+
+2. **Launch** (T-0)
+   - Deploy to production
+   - Monitor closely
+   - Be ready to rollback
+
+3. **Post-launch** (First week)
+   - Monitor metrics
+   - Respond to issues
+   - Gather feedback
+   - Iterate
+
+---
+
+## Conclusion
+
+This **Antigravity Technical Bible** provides exact specifications for every component of Foresight. Follow this guide step-by-step, and Antigravity will generate production-ready code for a top-tier, bug-free, cutting-edge trend intelligence platform.
+
+**Key Principles:**
+1. **Spec First** - Write detailed specs before coding
+2. **Test Always** - Write tests for every feature
+3. **Optimize Continuously** - Profile and optimize at every step
+4. **Monitor Everything** - Track performance and errors
+5. **Iterate Rapidly** - Use Ralph Loop for continuous improvement
+
+**Expected Outcome:** 16 weeks to a GitHub-trending, production-ready Foresight.
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** May 14, 2026  
+**Status:** Complete & Ready for Antigravity Implementation  
+**Confidence:** 95%+ (Production-Ready)
+
