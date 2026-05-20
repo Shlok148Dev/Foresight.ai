@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,9 +44,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${firaCode.variable}`}>
-      <body className="min-h-screen bg-[#0A0A14] text-white antialiased">
-        {children}
+      <body className="min-h-screen bg-background text-on-background antialiased selection:bg-primary-container selection:text-on-primary-container">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
 }
+

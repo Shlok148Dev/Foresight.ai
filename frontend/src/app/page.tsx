@@ -1,420 +1,125 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import {
-  TrendingUp,
-  Zap,
-  Eye,
-  BarChart3,
-  Globe,
-  Shield,
-  ChevronRight,
-  Sparkles,
-  Play,
-  ArrowRight,
-} from "lucide-react";
+import { Eye, Radar, LineChart, Zap, ArrowRight } from "lucide-react";
 
-/* ── Animated Counter ──────────────────────────────────────────── */
-
-function AnimatedNumber({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    const duration = 2000;
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
-      }
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [target]);
+export default function LandingPage() {
   return (
-    <span className="tabular-nums">
-      {count.toLocaleString()}{suffix}
-    </span>
-  );
-}
-
-/* ── Feature Card ──────────────────────────────────────────────── */
-
-function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-  gradient,
-}: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  gradient: string;
-}) {
-  return (
-    <div className="group relative rounded-2xl border border-[#2A3050] bg-[#0F1419] p-8 transition-all duration-300 hover:border-[#00D4AA] hover:shadow-[0_0_30px_rgba(0,212,170,0.08)]">
-      <div
-        className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl ${gradient}`}
-      >
-        <Icon className="h-6 w-6 text-white" />
-      </div>
-      <h3 className="mb-3 text-xl font-semibold text-white">{title}</h3>
-      <p className="leading-relaxed text-[#A0AEC0]">{description}</p>
-    </div>
-  );
-}
-
-/* ── Stat Card ─────────────────────────────────────────────────── */
-
-function StatCard({ value, label }: { value: React.ReactNode; label: string }) {
-  return (
-    <div className="text-center">
-      <div className="mb-1 text-4xl font-bold gradient-text">{value}</div>
-      <div className="text-sm text-[#718096]">{label}</div>
-    </div>
-  );
-}
-
-/* ── Signal Pill (floating demo element) ───────────────────────── */
-
-function SignalPill({
-  label,
-  stage,
-  delay,
-}: {
-  label: string;
-  stage: "embryonic" | "emerging" | "accelerating";
-  delay: number;
-}) {
-  const colors = {
-    embryonic: "border-[#6C63FF] text-[#6C63FF]",
-    emerging: "border-[#00D4AA] text-[#00D4AA]",
-    accelerating: "border-[#F59E0B] text-[#F59E0B]",
-  };
-  return (
-    <div
-      className={`inline-flex items-center gap-2 rounded-full border bg-[#0F1419]/80 px-4 py-2 text-sm backdrop-blur-sm ${colors[stage]}`}
-      style={{ animation: `float 4s ease-in-out ${delay}s infinite` }}
-    >
-      <span className="relative flex h-2 w-2">
-        <span
-          className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${
-            stage === "embryonic"
-              ? "bg-[#6C63FF]"
-              : stage === "emerging"
-              ? "bg-[#00D4AA]"
-              : "bg-[#F59E0B]"
-          }`}
-        />
-        <span
-          className={`relative inline-flex h-2 w-2 rounded-full ${
-            stage === "embryonic"
-              ? "bg-[#6C63FF]"
-              : stage === "emerging"
-              ? "bg-[#00D4AA]"
-              : "bg-[#F59E0B]"
-          }`}
-        />
-      </span>
-      {label}
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   LANDING PAGE
-   ══════════════════════════════════════════════════════════════════ */
-
-export default function Home() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* ── Ambient background ────────────────────────────────── */}
-      <div className="animated-gradient fixed inset-0 -z-10" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(108,99,255,0.12),transparent_60%)]" />
-
-      {/* ── Navbar ────────────────────────────────────────────── */}
-      <nav className="glass fixed left-0 right-0 top-0 z-50 border-b border-white/5">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Eye className="h-7 w-7 text-[#00D4AA]" />
-            <span className="text-xl font-bold tracking-tight">
-              Fore<span className="text-[#00D4AA]">sight</span>
-            </span>
+    <div className="min-h-screen bg-background text-on-surface font-sans selection:bg-primary-container selection:text-on-primary-container">
+      {/* Top Navigation */}
+      <header className="w-full fixed top-0 left-0 z-50 glass-panel border-b-0 h-16 flex justify-between items-center px-lg">
+        <div className="flex items-center gap-sm text-xl font-bold text-primary">
+          <Eye className="w-6 h-6" />
+          <span>Foresight</span>
+        </div>
+        <div className="hidden md:flex gap-lg text-on-surface-variant text-sm font-medium">
+          <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
+          <Link href="#how-it-works" className="hover:text-primary transition-colors">How it Works</Link>
+          <Link href="#pricing" className="hover:text-primary transition-colors">Pricing</Link>
+        </div>
+        <div>
+          <Link href="/login" className="text-on-surface-variant text-sm font-medium hover:text-primary mr-md transition-colors">
+            Log In
           </Link>
-
-          <div className="hidden items-center gap-8 md:flex">
-            <Link href="#features" className="text-sm text-[#A0AEC0] transition-colors hover:text-white">
-              Features
-            </Link>
-            <Link href="#how-it-works" className="text-sm text-[#A0AEC0] transition-colors hover:text-white">
-              How It Works
-            </Link>
-            <Link href="#pricing" className="text-sm text-[#A0AEC0] transition-colors hover:text-white">
-              Pricing
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-xl px-5 py-2 text-sm font-medium text-[#A0AEC0] transition-colors hover:text-white"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/register"
-              className="gradient-bg rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#6C63FF]/20 transition-all hover:shadow-[#6C63FF]/40 hover:brightness-110"
-            >
-              Get Started Free
-            </Link>
-          </div>
+          <Link href="/signup" className="btn-primary px-lg py-sm rounded text-sm font-bold">
+            Get Started
+          </Link>
         </div>
-      </nav>
+      </header>
 
-      {/* ── Hero Section ──────────────────────────────────────── */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-16">
-        {/* Floating signal pills */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute left-[8%] top-[22%] hidden lg:block">
-            <SignalPill label="AI Agents" stage="emerging" delay={0} />
-          </div>
-          <div className="absolute right-[10%] top-[28%] hidden lg:block">
-            <SignalPill label="Quantum ML" stage="embryonic" delay={1} />
-          </div>
-          <div className="absolute left-[15%] bottom-[30%] hidden lg:block">
-            <SignalPill label="Spatial Web" stage="accelerating" delay={2} />
-          </div>
-          <div className="absolute right-[12%] bottom-[25%] hidden lg:block">
-            <SignalPill label="Edge AI" stage="emerging" delay={0.5} />
-          </div>
+      {/* Hero Section */}
+      <section className="relative pt-[120px] pb-xxl px-gutter min-h-[921px] flex flex-col justify-center items-center text-center overflow-hidden">
+        {/* Abstract Background Element */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none flex justify-center items-center">
+          <div className="w-[800px] h-[800px] rounded-full bg-primary-container blur-[150px] mix-blend-screen" />
         </div>
-
-        <div
-          className={`mx-auto max-w-4xl text-center transition-all duration-1000 ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#6C63FF]/30 bg-[#6C63FF]/10 px-4 py-1.5 text-sm text-[#6C63FF]">
-            <Sparkles className="h-4 w-4" />
-            Powered by MiroFish Multi-Agent Simulation
-          </div>
-
-          {/* Headline */}
-          <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight md:text-7xl">
-            See Trends{" "}
-            <span className="gradient-text">Before</span>
-            <br />
-            They Break Out
+        
+        <div className="relative z-10 max-w-container-max mx-auto w-full">
+          <h1 className="text-4xl md:text-6xl font-bold text-on-surface mb-md tracking-tight leading-tight">
+            See trends before they break out
           </h1>
-
-          {/* Subheading */}
-          <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#A0AEC0] md:text-xl">
-            Foresight detects emerging signals across{" "}
-            <span className="text-white font-medium">50+ platforms</span> and predicts trend
-            trajectories using AI-powered behavioral simulation — days before
-            Google Trends.
+          <p className="text-lg text-on-surface-variant max-w-[600px] mx-auto mb-xl leading-relaxed">
+            Predictive trend intelligence powered by AI. Stay ahead of the curve with real-time analysis of global signals.
           </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/register"
-              className="gradient-bg group flex items-center gap-2 rounded-2xl px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-[#6C63FF]/25 transition-all hover:shadow-[#6C63FF]/40 hover:brightness-110"
-            >
-              Start Detecting Free
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          
+          <div className="flex flex-col sm:flex-row gap-md justify-center items-center mb-xxl">
+            <Link href="/signup" className="btn-primary px-xl py-md rounded-lg text-lg font-semibold flex items-center gap-2 w-full sm:w-auto justify-center">
+              Start Exploring
+              <ArrowRight className="w-5 h-5" />
             </Link>
-            <button className="flex items-center gap-2 rounded-2xl border border-[#2A3050] bg-[#0F1419] px-8 py-4 text-lg font-medium text-[#A0AEC0] transition-all hover:border-[#00D4AA] hover:text-white">
-              <Play className="h-5 w-5 text-[#00D4AA]" />
-              Watch Demo
-            </button>
           </div>
-        </div>
-
-        {/* Stats bar */}
-        <div
-          className={`mt-20 grid grid-cols-2 gap-8 md:grid-cols-4 transition-all duration-1000 delay-500 ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <StatCard
-            value={<AnimatedNumber target={50} suffix="+" />}
-            label="Signal Sources"
-          />
-          <StatCard
-            value={<AnimatedNumber target={1000000} suffix="" />}
-            label="Agent Simulations / Day"
-          />
-          <StatCard
-            value={<><AnimatedNumber target={48} />–<AnimatedNumber target={72} />h</>}
-            label="Early Detection"
-          />
-          <StatCard
-            value={<><AnimatedNumber target={85} />%</>}
-            label="Prediction Accuracy"
-          />
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronRight className="h-6 w-6 rotate-90 text-[#718096]" />
+          
+          {/* Trend Visualization Graphic */}
+          <div className="w-full max-w-[900px] mx-auto h-[300px] md:h-[400px] glass-panel rounded-xl flex items-end p-md relative overflow-hidden">
+            <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 300">
+              {/* Grid Lines */}
+              <path d="M0,50 L1000,50 M0,100 L1000,100 M0,150 L1000,150 M0,200 L1000,200 M0,250 L1000,250" fill="none" opacity="0.5" stroke="#2D3748" strokeWidth="1" />
+              {/* Lines */}
+              <path className="animated-line" d="M0,280 C200,280 300,150 500,200 C700,250 800,80 1000,40" fill="none" stroke="#0ECDC4" strokeWidth="4" style={{ animationDelay: '0.2s' }} />
+              <path className="animated-line" d="M0,290 C250,290 350,220 500,240 C650,260 750,120 1000,90" fill="none" stroke="#454a67" strokeWidth="3" style={{ animationDelay: '0.6s' }} />
+              <path className="animated-line" d="M0,270 C150,260 250,180 400,210 C550,240 700,150 1000,120" fill="none" stroke="#859492" strokeDasharray="5,5" strokeWidth="2" style={{ animationDelay: '1s' }} />
+              {/* Glow */}
+              <path d="M0,280 C200,280 300,150 500,200 C700,250 800,80 1000,40 L1000,300 L0,300 Z" fill="url(#gradient-teal)" opacity="0.1" />
+              <defs>
+                <linearGradient id="gradient-teal" x1="0%" x2="0%" y1="0%" y2="100%">
+                  <stop offset="0%" stopColor="#0ECDC4" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#0ECDC4" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
         </div>
       </section>
 
-      {/* ── Features Grid ─────────────────────────────────────── */}
-      <section id="features" className="relative px-6 py-32">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-4xl font-bold md:text-5xl">
-              Intelligence That{" "}
-              <span className="gradient-text">Moves Markets</span>
-            </h2>
-            <p className="mx-auto max-w-2xl text-lg text-[#A0AEC0]">
-              Every feature is designed to give you an unfair advantage in
-              detecting and acting on emerging trends.
+      {/* Features Section */}
+      <section id="features" className="py-xxl px-gutter max-w-container-max mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-on-surface text-center mb-xl">
+          Core Intelligence Capabilities
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+          <div className="glass-panel p-lg rounded-xl interactive-card flex flex-col gap-md">
+            <div className="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+              <Radar className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-semibold text-on-surface">Early Detection</h3>
+            <p className="text-base text-on-surface-variant flex-grow">
+              Scan millions of data points across global networks to identify weak signals before they become mainstream noise.
             </p>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <FeatureCard
-              icon={TrendingUp}
-              title="Predictive Signal Detection"
-              description="Detect emerging signals 48-72 hours before Google Trends. Multi-source NLP pipeline processes data from TikTok, Discord, Reddit, Telegram, and 46+ more platforms."
-              gradient="bg-gradient-to-br from-[#6C63FF] to-[#8B7FFF]"
-            />
-            <FeatureCard
-              icon={Globe}
-              title="Multi-Agent Simulation"
-              description="MiroFish-powered behavioral simulation with 1M+ agents predicts exactly how trends will spread — which communities amplify, mutation paths, and mainstream ETA."
-              gradient="bg-gradient-to-br from-[#00D4AA] to-[#00E6B8]"
-            />
-            <FeatureCard
-              icon={BarChart3}
-              title="Simulation Replay"
-              description="Watch exactly how a trend spread through communities with interactive force-directed graph visualization. Scrub the timeline, inspect nodes, and export insights."
-              gradient="bg-gradient-to-br from-[#F59E0B] to-[#FBBF24]"
-            />
-            <FeatureCard
-              icon={Zap}
-              title="Real-Time Feed"
-              description="Personalized signal stream ranked by your interest model. WebSocket-powered live updates ensure you never miss a breakout moment."
-              gradient="bg-gradient-to-br from-[#FF6B9D] to-[#FF8FAB]"
-            />
-            <FeatureCard
-              icon={Shield}
-              title="Accuracy Tracking"
-              description="Every prediction is validated against reality. Track your signal accuracy over time with transparent metrics — we publish our hit rate."
-              gradient="bg-gradient-to-br from-[#3B82F6] to-[#60A5FA]"
-            />
-            <FeatureCard
-              icon={Sparkles}
-              title="Action Prompts"
-              description="Every signal comes with 'the one thing to do right now.' No analysis paralysis — just clear, actionable intelligence tailored to your role."
-              gradient="bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA]"
-            />
+          <div className="glass-panel p-lg rounded-xl interactive-card flex flex-col gap-md">
+            <div className="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+              <LineChart className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-semibold text-on-surface">Accurate Predictions</h3>
+            <p className="text-base text-on-surface-variant flex-grow">
+              Our proprietary ML models weigh historical context against real-time momentum to forecast trajectory with high precision.
+            </p>
+          </div>
+          <div className="glass-panel p-lg rounded-xl interactive-card flex flex-col gap-md">
+            <div className="w-12 h-12 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+              <Zap className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-semibold text-on-surface">Real-Time Insights</h3>
+            <p className="text-base text-on-surface-variant flex-grow">
+              Access dashboards that update at the speed of the internet, ensuring you never miss critical shifts in your industry.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── How It Works ──────────────────────────────────────── */}
-      <section id="how-it-works" className="relative px-6 py-32">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-4xl font-bold md:text-5xl">
-              How <span className="gradient-text">Foresight</span> Works
-            </h2>
-          </div>
-
-          <div className="grid gap-12 md:grid-cols-3">
-            {[
-              {
-                step: "01",
-                title: "Signal Detection",
-                desc: "Our NLP pipeline continuously monitors 50+ platforms, extracting emerging patterns using clustering and semantic analysis.",
-                color: "#6C63FF",
-              },
-              {
-                step: "02",
-                title: "Agent Simulation",
-                desc: "MiroFish simulates how 1M+ behavioral agents would react — predicting spread path, virality coefficient, and mainstream ETA.",
-                color: "#00D4AA",
-              },
-              {
-                step: "03",
-                title: "Actionable Insight",
-                desc: "You receive a prioritized feed with confidence scores, spread predictions, and exactly what to do right now. Act fast.",
-                color: "#F59E0B",
-              },
-            ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div
-                  className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-bold"
-                  style={{
-                    background: `${item.color}15`,
-                    color: item.color,
-                    border: `1px solid ${item.color}30`,
-                  }}
-                >
-                  {item.step}
-                </div>
-                <h3 className="mb-3 text-xl font-semibold">{item.title}</h3>
-                <p className="text-[#A0AEC0]">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* Footer */}
+      <footer className="w-full bg-background text-primary text-sm border-t border-outline-variant flex flex-col md:flex-row justify-between items-center py-lg px-xl mt-xxl">
+        <div className="text-xs font-bold uppercase tracking-wide text-on-surface-variant mb-md md:mb-0">
+          © 2026 Foresight Predictive Intelligence
         </div>
-      </section>
-
-      {/* ── CTA Section ───────────────────────────────────────── */}
-      <section className="relative px-6 py-32">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-[#2A3050] bg-[#0F1419] p-12 text-center md:p-16">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-            Ready to See the Future?
-          </h2>
-          <p className="mb-8 text-lg text-[#A0AEC0]">
-            Join thousands of analysts, creators, and founders who detect
-            trends before they break out.
-          </p>
-          <Link
-            href="/register"
-            className="gradient-bg inline-flex items-center gap-2 rounded-2xl px-10 py-4 text-lg font-semibold text-white shadow-xl shadow-[#6C63FF]/25 transition-all hover:shadow-[#6C63FF]/40 hover:brightness-110"
-          >
-            Get Started Free
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-          <p className="mt-4 text-sm text-[#718096]">
-            No credit card required · 5 signals/day free forever
-          </p>
-        </div>
-      </section>
-
-      {/* ── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-[#2A3050] px-6 py-12">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
-            <Eye className="h-5 w-5 text-[#00D4AA]" />
-            <span className="font-semibold">Foresight</span>
-          </div>
-          <div className="flex gap-8 text-sm text-[#718096]">
-            <Link href="#" className="hover:text-white">About</Link>
-            <Link href="#" className="hover:text-white">API Docs</Link>
-            <Link href="#" className="hover:text-white">GitHub</Link>
-            <Link href="#" className="hover:text-white">Privacy</Link>
-          </div>
-          <div className="text-sm text-[#718096]">
-            © 2026 Foresight. Open source.
-          </div>
+        <div className="flex flex-wrap gap-md justify-center">
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors">About</Link>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors">Pricing</Link>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors">Docs</Link>
+          <Link href="https://github.com/Shlok148Dev/Foresight.ai" className="text-on-surface-variant hover:text-primary transition-colors">GitHub</Link>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors">Twitter</Link>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors">Email</Link>
         </div>
       </footer>
     </div>

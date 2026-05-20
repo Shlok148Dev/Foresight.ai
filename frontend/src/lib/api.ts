@@ -1,77 +1,91 @@
 /**
  * Foresight — API Client
- * Axios instance with interceptors for auth tokens and error handling.
+ * ========================
+ * Axios instance with JWT interceptors and auto-refresh.
  */
 
 import axios from "axios";
-import { useAuthStore } from "@/store/auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export const api = axios.create({
-  baseURL: `${API_BASE}/api/v1`,
-  timeout: 10000,
+  baseURL: API_BASE,
+  timeout: 15_000,
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach access token to every request
+/* ── Request interceptor: attach JWT ─────────────────────────── */
+
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("foresight_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
 
-// Handle 401 — try refresh, else logout
+/* ── Response interceptor: handle 401 ────────────────────────── */
+
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error) => {
-    const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
-      original._retry = true;
-      const refreshToken = useAuthStore.getState().refreshToken;
-      if (refreshToken) {
-        try {
-          const res = await axios.post(`${API_BASE}/api/v1/auth/refresh`, null, {
-            params: { refresh_token: refreshToken },
-          });
-          const { access_token, refresh_token } = res.data;
-          const user = useAuthStore.getState().user;
-          if (user) {
-            useAuthStore.getState().setAuth(user, access_token, refresh_token);
-          }
-          original.headers.Authorization = `Bearer ${access_token}`;
-          return api(original);
-        } catch {
-          useAuthStore.getState().clearAuth();
-        }
-      }
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("foresight_token");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
 
-// ── Auth API ──
+/* ── Typed API helpers ───────────────────────────────────────── */
 
-export const authAPI = {
-  register: (data: { email: string; username: string; password: string; full_name?: string }) =>
-    api.post("/auth/register", data),
+export const authApi = {
+  login: (email: string, password: string) =>
+    api.post("/auth/login", { email, password }),
 
-  login: (data: { email: string; password: string }) =>
-    api.post("/auth/login", data),
+  register: (email: string, password: string, username: string, full_name?: string) =>
+    api.post("/auth/register", { email, password, username, full_name }),
 
-  getProfile: () => api.get("/auth/me"),
+  me: () => api.get("/auth/me"),
+
+  refresh: (refreshToken: string) =>
+    api.post("/auth/refresh", { refresh_token: refreshToken }),
 };
 
-// ── Signals API ──
-
-export const signalsAPI = {
-  ingest: (data: { text: string; platform: string; author?: string; url?: string }) =>
-    api.post("/signals/ingest", data),
-
+export const signalsApi = {
   list: (params?: { limit?: number; offset?: number; platform?: string }) =>
     api.get("/signals/", { params }),
 
-  getById: (id: string) => api.get(`/signals/${id}`),
+  get: (id: string) => api.get(`/signals/${id}`),
+
+  ingest: (data: { text: string; platform: string; author?: string; metadata?: Record<string, unknown> }) =>
+    api.post("/signals/ingest", data),
+
+  ingestBatch: (signals: Array<{ text: string; platform: string }>) =>
+    api.post("/signals/ingest/batch", { signals }),
+};
+
+export const detectionsApi = {
+  list: (params?: {
+    limit?: number;
+    offset?: number;
+    stage?: string;
+    min_confidence?: number;
+    sort_by?: string;
+  }) => api.get("/detections/", { params }),
+
+  get: (id: string) => api.get(`/detections/${id}`),
+
+  runPipeline: (windowHours?: number) =>
+    api.post(`/detections/run-pipeline?window_hours=${windowHours || 24}`),
+
+  stagesSummary: () => api.get("/detections/stages/summary"),
+};
+
+export const searchApi = {
+  search: (query: string, limit?: number) =>
+    api.get("/search/", { params: { q: query, limit } }),
 };

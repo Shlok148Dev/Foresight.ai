@@ -16,6 +16,7 @@ from app.cache.redis_cache import close_redis
 from app.api.auth import router as auth_router
 from app.api.signals import router as signals_router
 from app.api.detections import router as detections_router
+from app.api.search import router as search_router
 from app.api.monitoring import router as monitoring_router, metrics_middleware
 from app.middleware.rate_limit import RateLimitMiddleware
 
@@ -85,6 +86,7 @@ async def log_requests(request, call_next):
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(signals_router, prefix="/api/v1")
 app.include_router(detections_router, prefix="/api/v1")
+app.include_router(search_router, prefix="/api/v1")
 app.include_router(monitoring_router)
 app.middleware("http")(metrics_middleware)
 

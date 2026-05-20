@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Foresight Predictive Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-bright": "#353a3f",
+                      "on-tertiary-container": "#713a00",
+                      "secondary-container": "#454a67",
+                      "background": "#0f1419",
+                      "tertiary-fixed-dim": "#ffb77f",
+                      "primary-fixed-dim": "#34dcd3",
+                      "primary-container": "#0ecdc4",
+                      "on-secondary-container": "#b5badd",
+                      "on-error-container": "#ffdad6",
+                      "outline-variant": "#3b4948",
+                      "on-primary-fixed": "#00201e",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#2c3136",
+                      "inverse-surface": "#dee3ea",
+                      "surface-container-low": "#171c21",
+                      "surface-dim": "#0f1419",
+                      "surface-variant": "#30353b",
+                      "on-secondary-fixed": "#151a34",
+                      "tertiary-fixed": "#ffdcc4",
+                      "tertiary": "#ffc8a0",
+                      "surface": "#0f1419",
+                      "on-secondary-fixed-variant": "#404562",
+                      "surface-container-lowest": "#0a0f14",
+                      "primary": "#49e9e0",
+                      "on-surface-variant": "#bacac7",
+                      "on-secondary": "#2a2f4a",
+                      "surface-tint": "#34dcd3",
+                      "on-error": "#690005",
+                      "tertiary-container": "#ffa254",
+                      "inverse-primary": "#006a65",
+                      "on-primary-container": "#00524e",
+                      "surface-container": "#1b2025",
+                      "on-tertiary": "#4e2600",
+                      "error-container": "#93000a",
+                      "primary-fixed": "#5df9ef",
+                      "on-background": "#dee3ea",
+                      "surface-container-high": "#252a30",
+                      "on-tertiary-fixed-variant": "#6f3800",
+                      "on-surface": "#dee3ea",
+                      "on-tertiary-fixed": "#2f1500",
+                      "on-primary": "#003734",
+                      "secondary-fixed": "#dee1ff",
+                      "secondary-fixed-dim": "#c0c4e8",
+                      "outline": "#859492",
+                      "on-primary-fixed-variant": "#00504c",
+                      "secondary": "#c0c4e8",
+                      "surface-container-highest": "#30353b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxl": "64px",
+                      "container-max": "1280px",
+                      "md": "16px",
+                      "xl": "40px",
+                      "base": "8px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-xl-mobile": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0f1419;
+            color: #dee3ea;
+        }
+        .card-glow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .glass-panel {
+            background: rgba(26, 31, 58, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Custom Checkbox/Toggle Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0ECDC4;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0ECDC4;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-x-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-surface text-primary font-body-md text-body-md h-full w-[240px] fixed left-0 top-0 border-r border-outline-variant flex flex-col h-full py-lg px-md z-40 hidden md:flex">
+<div class="mb-xl flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold text-primary">Foresight</span>
+<span class="text-on-surface-variant font-label-caps text-label-caps">Predictive Intel</span>
+</div>
+<div class="flex-1 flex flex-col gap-base">
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="rss_feed">rss_feed</span>
+<span>Feed</span>
+</a>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span>Search</span>
+</a>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span>Saved</span>
+</a>
+<a class="flex items-center gap-md p-sm rounded-lg text-primary font-bold border-r-2 border-primary bg-surface-variant/50 hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors duration-200 scale-102 hover:brightness-110 active:scale-98 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-xl text-primary font-body-md text-body-md fixed top-0 right-0 w-[calc(100%-240px)] z-50 border-b border-outline-variant flex justify-between items-center h-16 px-lg transition-all duration-200 hidden md:flex">
+<div class="flex items-center gap-md">
+<!-- Search bar logic would go here based on 'search_bar: on_left' -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="bg-[#1A1F3A] border border-[#2D3748] text-on-surface rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-body-sm text-body-sm w-64 placeholder-on-surface-variant" placeholder="Search settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="md:ml-[240px] pt-16 min-h-screen flex flex-col">
+<div class="p-lg md:p-xl max-w-container-max mx-auto w-full flex-1">
+<div class="mb-xl">
+<h1 class="font-headline-lg text-headline-lg md:font-headline-xl md:text-headline-xl text-on-surface mb-sm">Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your account preferences and integrations.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg lg:gap-xl">
+<!-- Left Column: Navigation / Quick Links (Optional, but good for layout) -->
+<div class="hidden lg:block lg:col-span-1">
+<div class="sticky top-24 flex flex-col gap-sm">
+<a class="font-body-md text-body-md text-primary font-bold px-md py-sm rounded-lg bg-surface-variant/30 border-l-2 border-primary transition-all" href="#profile">Profile</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface px-md py-sm rounded-lg hover:bg-surface-variant/20 transition-all" href="#preferences">Preferences</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface px-md py-sm rounded-lg hover:bg-surface-variant/20 transition-all" href="#integrations">Integrations</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface px-md py-sm rounded-lg hover:bg-surface-variant/20 transition-all" href="#account">Account Security</a>
+</div>
+</div>
+<!-- Right Column: Settings Content -->
+<div class="lg:col-span-2 flex flex-col gap-xl">
+<!-- 1. PROFILE -->
+<section class="bg-[#1A1F3A] border border-[#2D3748] rounded-xl p-lg md:p-xl transition-all duration-300 hover:scale-[1.01] hover:border-[#A0AEC0] relative overflow-hidden" id="profile">
+<div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-6xl" data-icon="person">person</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-lg border-b border-[#2D3748] pb-sm">Profile</h2>
+<div class="flex flex-col md:flex-row gap-lg items-start md:items-center mb-lg">
+<div class="relative group cursor-pointer">
+<img alt="User Avatar" class="w-[80px] h-[80px] rounded-full object-cover border-2 border-[#2D3748] group-hover:border-primary transition-colors" data-alt="A close-up, highly detailed portrait of a professional individual in a modern, sleek tech environment. The lighting is moody and cinematic, featuring cool teal and deep blue tones characteristic of a premium dark mode interface. The subject appears confident and focused, lit by subtle rim lighting that creates a sense of depth against a blurred, dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlesEf6gNG36KxCyOZbuej8wCCl9pH_q7jz9QNUbMP7ssJSVrUoNDy6vysoo9MDx4iJwjtIEqUkNuI7av5k_uIpd2OIP21ImkYvoz-vGY2hA3W77f4_rfc7cfdjIeKigNAb8qY7lBUhBCcvOa4UsPuuopqk3ma30Gv8aElEVdSSGArW_FZJUlKyMQv4zgjZ2UIhZYBsQLfEssHqxzpIgvVcXCV-YpDQbJpJn2kP21m4_3nt-73G0K5umF2DLz5trsA_u93DqLG9-A"/>
+<div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white" data-icon="edit">edit</span>
+</div>
+</div>
+<div class="flex-1 w-full space-y-md">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-xs">Full Name</label>
+<input class="w-full bg-[#1A1F3A] border border-[#2D3748] text-on-surface rounded-lg px-md py-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-body-md text-body-md" type="text" value="Alex Mercer"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-xs">Email Address</label>
+<input class="w-full bg-[#1A1F3A] border border-[#2D3748] text-on-surface rounded-lg px-md py-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-body-md text-body-md" type="email" value="alex.mercer@foresight.inc"/>
+</div>
+</div>
+</div>
+<div class="flex justify-end mt-lg">
+<button class="bg-primary-container text-background font-body-md text-body-md font-semibold px-lg py-sm rounded-lg hover:scale-102 hover:brightness-110 active:scale-98 transition-all duration-200 shadow-[0_0_15px_rgba(14,205,196,0.2)]">
+                                Save Changes
+                            </button>
+</div>
+</section>
+<!-- 2. PREFERENCES -->
+<section class="bg-[#1A1F3A] border border-[#2D3748] rounded-xl p-lg md:p-xl transition-all duration-300 hover:scale-[1.01] hover:border-[#A0AEC0]" id="preferences">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-lg border-b border-[#2D3748] pb-sm">Preferences</h2>
+<div class="space-y-lg">
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Email Notifications</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Receive daily digests and critical alerts via email.</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-all duration-300 right-0 border-[#0ECDC4]" id="toggle1" name="toggle1" style="top: -2px; right: 0;" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-[#0ECDC4] cursor-pointer transition-colors duration-300" for="toggle1"></label>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">SMS Alerts</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Get text messages for high-priority forecast shifts.</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-surface-variant border-4 border-[#2D3748] appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle2" name="toggle2" style="top: -2px; left: 0;" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-[#2D3748] cursor-pointer transition-colors duration-300" for="toggle2"></label>
+</div>
+</div>
+<div class="pt-sm">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-xs">Digest Frequency</label>
+<div class="relative">
+<select class="w-full md:w-1/2 bg-[#1A1F3A] border border-[#2D3748] text-on-surface rounded-lg px-md py-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all font-body-md text-body-md appearance-none cursor-pointer">
+<option>Real-time (As it happens)</option>
+<option selected="">Daily Summary</option>
+<option>Weekly Digest</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. INTEGRATIONS -->
+<section class="bg-[#1A1F3A] border border-[#2D3748] rounded-xl p-lg md:p-xl transition-all duration-300 hover:scale-[1.01] hover:border-[#A0AEC0]" id="integrations">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-lg border-b border-[#2D3748] pb-sm">Integrations</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Slack -->
+<div class="bg-surface border border-[#2D3748] rounded-lg p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-[#E0E7FF]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="forum">forum</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Slack</span>
+</div>
+<div class="relative inline-block w-10 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-all duration-300 right-0 border-[#0ECDC4]" style="top: -2px; right:0;" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-[#0ECDC4] cursor-pointer"></label>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex-1">Push alerts directly to specific Slack channels.</p>
+<button class="mt-auto text-primary font-body-sm text-body-sm hover:underline text-left">Configure Channels →</button>
+</div>
+<!-- Discord -->
+<div class="bg-surface border border-[#2D3748] rounded-lg p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-[#E0E7FF]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="discord">diamond</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Discord</span>
+</div>
+<button class="bg-transparent border border-[#2D3748] text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded hover:bg-surface-variant hover:text-on-surface transition-colors">Connect</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex-1">Sync predictive models with server roles.</p>
+</div>
+<!-- Webhook -->
+<div class="bg-surface border border-[#2D3748] rounded-lg p-md flex flex-col gap-sm md:col-span-2">
+<div class="flex items-center justify-between mb-sm">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-[#E0E7FF]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="webhook">webhook</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Custom Webhooks</span>
+</div>
+<button class="bg-transparent border border-[#2D3748] text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded hover:bg-surface-variant hover:text-on-surface transition-colors">Add Endpoint</button>
+</div>
+<div class="bg-[#1A1F3A] border border-[#2D3748] rounded p-sm font-mono text-xs text-on-surface-variant flex items-center justify-between">
+<span class="truncate">https://api.foresight.inc/v1/webhooks/req_8923...</span>
+<button class="ml-2 text-primary hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. ACCOUNT -->
+<section class="bg-[#1A1F3A] border border-[#2D3748] rounded-xl p-lg md:p-xl transition-all duration-300 hover:scale-[1.01] hover:border-[#A0AEC0]" id="account">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-lg border-b border-[#2D3748] pb-sm text-error/90 border-error/20">Account Security</h2>
+<div class="space-y-lg">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-md border-b border-[#2D3748]/50 pb-md">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Password</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Last changed 3 months ago.</p>
+</div>
+<button class="bg-transparent border border-[#2D3748] text-[#E0E7FF] font-body-md text-body-md px-md py-sm rounded-lg hover:bg-surface-variant transition-all duration-200 hover:scale-102 active:scale-98">
+                                    Change Password
+                                </button>
+</div>
+<div class="flex items-center justify-between border-b border-[#2D3748]/50 pb-md">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Two-Factor Authentication (2FA)</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Add an extra layer of security to your account.</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-surface-variant border-4 border-[#2D3748] appearance-none cursor-pointer z-10 transition-all duration-300" id="toggle3" name="toggle3" style="top: -2px; left: 0;" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-[#2D3748] cursor-pointer transition-colors duration-300" for="toggle3"></label>
+</div>
+</div>
+<div class="pt-sm">
+<p class="font-body-md text-body-md text-error font-semibold mb-sm">Danger Zone</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">Once you delete your account, there is no going back. Please be certain.</p>
+<button class="bg-error/10 border border-error/30 text-error font-body-md text-body-md font-semibold px-md py-sm rounded-lg hover:bg-error hover:text-on-error transition-all duration-200 hover:scale-102 active:scale-98">
+                                    Delete Account
+                                </button>
+</div>
+</div>
+</section>
+<!-- 5. LOGOUT -->
+<div class="flex justify-end pt-lg">
+<button class="bg-transparent border border-[#2D3748] text-[#E0E7FF] font-body-md text-body-md px-lg py-sm rounded-lg hover:bg-surface-variant transition-all duration-200 hover:scale-102 active:scale-98 flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                            Sign Out
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-background text-primary font-body-sm text-body-sm w-full border-t border-outline-variant flex flex-col md:flex-row justify-between items-center py-lg px-xl transition-opacity duration-200 mt-auto">
+<div class="text-label-caps font-label-caps text-on-surface-variant mb-md md:mb-0">
+                © 2024 Foresight Predictive Intelligence
+            </div>
+<div class="flex flex-wrap gap-md justify-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Docs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">GitHub</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Twitter</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Email</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple script to handle checkbox toggle visual state if needed beyond CSS
+        const checkboxes = document.querySelectorAll('.toggle-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if(this.checked) {
+                    this.style.left = 'auto';
+                    this.style.right = '0';
+                    this.style.borderColor = '#0ECDC4';
+                } else {
+                    this.style.right = 'auto';
+                    this.style.left = '0';
+                    this.style.borderColor = '#2D3748';
+                }
+            });
+        });
+    </script>
+</body></html>
