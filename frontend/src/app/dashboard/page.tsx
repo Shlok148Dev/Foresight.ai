@@ -3,9 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import {
-  TrendingUp, Monitoring, NotificationsActive, Verified, SmartToy, Checkroom, FlightTakeoff, Activity, Download
-} from "@mui/icons-material"; // Wait, in previous files we used lucide-react. I will stick to lucide-react for consistency.
+
 import {
   TrendingUp as TrendingUpIcon, Activity as ActivityIcon, Bell as BellIcon, CheckCircle as CheckCircleIcon, Cpu as CpuIcon, Sparkles as SparklesIcon, Rocket as RocketIcon, Download as DownloadIcon
 } from "lucide-react";

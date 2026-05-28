@@ -5,12 +5,11 @@ Unit tests use SQLite in-memory (fast, isolated, no cloud dependency).
 Integration tests use Supabase (marked with @pytest.mark.integration).
 
 Architecture:
-  - conftest overrides get_db to inject a test-local SQLite session
-  - All SQLAlchemy ORM models work with SQLite for basic CRUD tests
+  - Each test gets a fresh in-memory SQLite database (created + dropped per test)
+  - No session-scoped event_loop override (deprecated in pytest-asyncio 0.24+)
   - Supabase-specific features are tested in integration tests only
 """
 
-import asyncio
 import os
 import pytest
 import pytest_asyncio
@@ -19,35 +18,27 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from app.db.database import Base, get_db
 from app.main import app
 
-# SQLite for fast, isolated unit tests (no Supabase connection needed)
-TEST_DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite+aiosqlite:///./test.db")
-
-engine = create_async_engine(TEST_DB_URL, echo=False)
-TestSession = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest_asyncio.fixture(autouse=True)
-async def setup_db():
-    """Create all tables before each test, drop after."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+# Use a fresh in-memory SQLite database per test to avoid table-drop race conditions
+TEST_DB_URL = "sqlite+aiosqlite://"  # pure in-memory, new db per engine
 
 
 @pytest_asyncio.fixture
 async def db_session():
-    """Provide a clean database session for each test."""
+    """Provide a clean, isolated in-memory database session for each test."""
+    engine = create_async_engine(TEST_DB_URL, echo=False)
+    TestSession = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+    # Create schema
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     async with TestSession() as session:
         yield session
+
+    # Teardown
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture

@@ -16,8 +16,10 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Enum as SAEnum,
+    JSON,
+    Uuid,
 )
-from sqlalchemy.dialects.postgresql import JSON, ARRAY, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -69,7 +71,7 @@ class User(Base):
     """
     __tablename__ = "users"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
     username = Column(String(100), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
@@ -80,7 +82,7 @@ class User(Base):
     is_verified = Column(Boolean, default=False, nullable=False)
 
     # Preferences
-    domains = Column(ARRAY(String), default=list)  # User's tracked domains
+    domains = Column(JSON, default=list)  # User's tracked domains
     preferences = Column(JSON, default=dict)
 
     # Timestamps
@@ -113,7 +115,7 @@ class Signal(Base):
     """
     __tablename__ = "signals"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     text = Column(Text, nullable=False)
     platform = Column(SAEnum(PlatformType), nullable=False)
     author = Column(String(255), nullable=True)
@@ -127,7 +129,7 @@ class Signal(Base):
 
     # Foreign keys
     detection_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("detections.id"), nullable=True
+        Uuid(as_uuid=True), ForeignKey("detections.id"), nullable=True
     )
 
     # Relationships
@@ -152,16 +154,16 @@ class Detection(Base):
     """
     __tablename__ = "detections"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     topic = Column(String(500), nullable=False)
     description = Column(Text, nullable=True)
     stage = Column(SAEnum(SpreadStage), default=SpreadStage.EMBRYONIC, nullable=False)
     confidence = Column(Float, nullable=False, default=0.0)  # 0.0 – 1.0
     signal_count = Column(Integer, default=0)
     velocity = Column(Float, default=0.0)  # signals per hour
-    platforms = Column(ARRAY(String), default=list)
-    communities = Column(ARRAY(String), default=list)
-    keywords = Column(ARRAY(String), default=list)
+    platforms = Column(JSON, default=list)
+    communities = Column(JSON, default=list)
+    keywords = Column(JSON, default=list)
     action_prompt = Column(Text, nullable=True)  # "The one thing to do right now"
     metadata_ = Column("metadata", JSON, default=dict)
 
@@ -199,9 +201,9 @@ class Forecast(Base):
     """
     __tablename__ = "forecasts"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     detection_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("detections.id"), nullable=False
+        Uuid(as_uuid=True), ForeignKey("detections.id"), nullable=False
     )
     forecast_date = Column(DateTime, nullable=False)
     predicted_mentions = Column(Integer, nullable=True)
@@ -233,9 +235,9 @@ class Simulation(Base):
     """
     __tablename__ = "simulations"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     detection_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("detections.id"), nullable=False
+        Uuid(as_uuid=True), ForeignKey("detections.id"), nullable=False
     )
     agent_count = Column(Integer, default=1000)
     monte_carlo_runs = Column(Integer, default=50)
@@ -265,10 +267,10 @@ class SavedSignal(Base):
     """User's saved/watchlisted detections."""
     __tablename__ = "saved_signals"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(Uuid(as_uuid=True), ForeignKey("users.id"), nullable=False)
     detection_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("detections.id"), nullable=False
+        Uuid(as_uuid=True), ForeignKey("detections.id"), nullable=False
     )
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
