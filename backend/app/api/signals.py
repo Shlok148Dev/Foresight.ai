@@ -246,13 +246,44 @@ async def _process_signal_async(signal_id: str):
     """Background: process single signal through NLP pipeline."""
     try:
         from app.db.database import async_session_factory
+        from app.models.database import Signal
         from app.services.detection import process_single_signal
+        from app.services.nlp_processor import nlp_processor
+        from app.services.search import search_service
+        from app.api.websocket import manager
+        from sqlalchemy import select
+        from uuid import UUID
 
         async with async_session_factory() as session:
+            # Load signal
+            res = await session.execute(select(Signal).where(Signal.id == UUID(signal_id)))
+            signal = res.scalar_one_or_none()
+            
+            if signal:
+                # 1. NLP Processing
+                nlp_result = nlp_processor.process_signal(signal.text, signal.platform.value)
+                if nlp_result:
+                    # 2. ES Indexing
+                    nlp_result["id"] = str(signal.id)
+                    search_service.index_signal(nlp_result)
+                    
+                    # 3. Broadcast real-time signal
+                    await manager.broadcast({
+                        "type": "new_signal", 
+                        "data": {
+                            "id": str(signal.id), 
+                            "text": signal.text, 
+                            "platform": signal.platform.value, 
+                            "category": nlp_result["category"]
+                        }
+                    })
+
+            # 4. Standard detection clustering pipeline
             result = await process_single_signal(signal_id, session)
             await session.commit()
             if result:
                 logger.info(f"Signal {signal_id} matched to detection '{result.topic}'")
+                from app.cache.redis_cache import cache_delete_pattern
                 await cache_delete_pattern("detections:*")
     except Exception as e:
         logger.error(f"Error processing signal {signal_id}: {e}")

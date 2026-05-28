@@ -349,6 +349,34 @@ async def run_detection_pipeline(
 
         stage = classify_stage(signal_count, velocity)
         confidence = compute_confidence(signal_count, velocity, len(platforms))
+        action_prompt = _generate_action_prompt(topic, stage, velocity)
+        
+        # --- PHASE 2 AI/ML ENHANCEMENTS ---
+        try:
+            from app.services.llm_orchestration import trend_analyzer
+            from app.services.mirofish_integration import mirofish_simulator
+            from app.api.websocket import manager
+            
+            signal_dict = {
+                "text": cluster_signals[0].text if cluster_signals else "",
+                "entities": keywords,
+                "keywords": keywords,
+                "confidence": int(confidence * 100)
+            }
+            
+            # Trend analysis via LLM 
+            llm_analysis = await trend_analyzer.analyze_trend(signal_dict)
+            if llm_analysis and llm_analysis.get("trend_name"):
+                topic = llm_analysis.get("trend_name", topic)
+                action_prompt = llm_analysis.get("forecast", action_prompt)
+                
+            # MiroFish Simulation
+            simulation = mirofish_simulator.simulate_trend_spread(signal_dict)
+            if simulation and simulation.get("virality_coefficient"):
+                velocity = velocity + simulation["virality_coefficient"] * 10
+        except Exception as e:
+            logger.warning(f"Phase 2 AI Integration failed: {e}")
+        # ----------------------------------
 
         # Create detection
         detection = Detection(
@@ -360,11 +388,26 @@ async def run_detection_pipeline(
             velocity=round(velocity, 2),
             platforms=platforms,
             keywords=keywords,
-            action_prompt=_generate_action_prompt(topic, stage, velocity),
+            action_prompt=action_prompt,
             metadata_={"cluster_id": cluster_id, "window_hours": window_hours, "eps": eps},
         )
         db.add(detection)
         await db.flush()
+        
+        # Broadcast via WebSocket
+        try:
+            from app.api.websocket import manager
+            await manager.broadcast({
+                "type": "new_trend",
+                "data": {
+                    "id": str(detection.id),
+                    "topic": topic,
+                    "stage": stage.value,
+                    "confidence": confidence
+                }
+            })
+        except Exception:
+            pass
 
         # Link signals to this detection
         for signal in cluster_signals:

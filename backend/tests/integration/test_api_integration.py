@@ -17,6 +17,17 @@ def anyio_backend():
     return "asyncio"
 
 
+@pytest_asyncio.fixture
+async def test_user_credentials():
+    import time
+    unique = int(time.time() * 1000)
+    return {
+        "email": f"integration_{unique}@foresight.ai",
+        "password": "SecurePassword123!",
+        "username": f"integration_user_{unique}"
+    }
+
+
 @pytest_asyncio.fixture(scope="function")
 async def client():
     async with AsyncClient(
@@ -29,10 +40,12 @@ async def client():
 
 
 async def _register_and_login(client: AsyncClient, suffix: str = "int") -> str:
-    email = f"inttest_{suffix}@foresight.ai"
+    import time
+    unique_suffix = f"{suffix}_{int(time.time() * 1000)}"
+    email = f"inttest_{unique_suffix}@foresight.ai"
     await client.post(
         "/api/v1/auth/register",
-        json={"email": email, "password": "IntTest1234!", "username": f"intuser_{suffix}"},
+        json={"email": email, "password": "IntTest1234!", "username": f"intuser_{unique_suffix}"},
     )
     resp = await client.post(
         "/api/v1/auth/login",
@@ -192,4 +205,4 @@ async def test_auth_me_endpoint(client):
     assert resp.status_code == 200
     user = resp.json()
     assert "email" in user
-    assert "inttest_me@foresight.ai" in user["email"]
+    assert "inttest_me" in user["email"]
