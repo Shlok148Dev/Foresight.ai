@@ -1,0 +1,6 @@
+apiVersion: v2
+name: foresight
+description: Foresight AI Trend Prediction Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
