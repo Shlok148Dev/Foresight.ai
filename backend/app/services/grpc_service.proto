@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package foresight;
+
+service TrendService {
+    rpc GetTrend(TrendRequest) returns (TrendResponse);
+    rpc ForecastTrend(ForecastRequest) returns (ForecastResponse);
+    rpc DetectAnomalies(AnomalyRequest) returns (AnomalyResponse);
+}
+
+message TrendRequest {
+    string trend_id = 1;
+}
+
+message TrendResponse {
+    string trend_id = 1;
+    string name = 2;
+    float confidence = 3;
+    string stage = 4;
+}
+
+message ForecastRequest {
+    string trend_id = 1;
+    int32 periods = 2;
+}
+
+message ForecastResponse {
+    string trend_id = 1;
+    repeated int32 predicted_mentions = 2;
+    float virality_score = 3;
+    int32 peak_day = 4;
+}
+
+message AnomalyRequest {
+    string trend_id = 1;
+}
+
+message AnomalyResponse {
+    string trend_id = 1;
+    bool is_anomaly = 2;
+    string anomaly_type = 3;
+    float confidence = 4;
+}

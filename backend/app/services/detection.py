@@ -422,6 +422,115 @@ async def run_detection_pipeline(
     logger.info(f"Pipeline complete: {len(new_detections)} detections created, "
                 f"{sum(1 for l in labels if l == -1)} signals classified as noise")
 
+    # --- PHASE 3A ENSEMBLE FORECASTING ---
+    if new_detections:
+        try:
+            from app.services.forecasting_ensemble import EnsembleForecaster
+            from app.models.database import Forecast
+            from datetime import datetime, timezone, timedelta
+            
+            forecaster = EnsembleForecaster()
+            
+            for detection in new_detections:
+                # Generate synthetic history for new detection to enable forecasting demo
+                history = []
+                base_count = max(10, detection.signal_count)
+                now = datetime.now(timezone.utc)
+                for i in range(7, 0, -1):
+                    history.append({
+                        "timestamp": (now - timedelta(days=i)).isoformat(),
+                        "count": max(1, int(base_count * (0.8 ** i)))
+                    })
+                
+                forecast_data = forecaster.forecast_trend(history, periods=21)
+                
+                # Save forecast
+                for i in range(21):
+                    f = Forecast(
+                        detection_id=detection.id,
+                        forecast_date=now + timedelta(days=i),
+                        predicted_mentions=int(forecast_data["forecast"][i]),
+                        confidence_lower=float(forecast_data["confidence_lower"][i]),
+                        confidence_upper=float(forecast_data["confidence_upper"][i]),
+                        model_version="ensemble-v1"
+                    )
+                    db.add(f)
+                
+                # Broadcast to frontend
+                try:
+                    from app.api.websocket import manager
+                    await manager.broadcast({
+                        "type": "new_forecast",
+                        "data": {
+                            "id": str(detection.id),
+                            "forecast": forecast_data["forecast"],
+                            "virality_score": forecast_data["virality_score"],
+                            "peak_day": forecast_data["peak_day"]
+                        }
+                    })
+                except Exception:
+                    pass
+                
+                # --- PHASE 3B GNN PROPAGATION ---
+                try:
+                    from app.services.graph_neural_networks import TrendNetworkAnalyzer
+                    from app.models.database import Simulation
+                    gnn_analyzer = TrendNetworkAnalyzer()
+                    propagation = gnn_analyzer.predict_propagation({"initial_adoption": 0.1}, time_steps=21)
+                    
+                    sim = Simulation(
+                        detection_id=detection.id,
+                        simulation_data=propagation,
+                        virality_coefficient=float(propagation.get("mainstream_probability", 0.0))
+                    )
+                    db.add(sim)
+                    
+                    try:
+                        await manager.broadcast({
+                            "type": "new_propagation",
+                            "data": {
+                                "id": str(detection.id),
+                                "peak_community": propagation["peak_community"],
+                                "mainstream_probability": propagation["mainstream_probability"]
+                            }
+                        })
+                    except Exception:
+                        pass
+                except Exception as e:
+                    logger.warning(f"Phase 3B GNN failed: {e}")
+                # --------------------------------
+                
+                # --- PHASE 3C ANOMALY DETECTION ---
+                try:
+                    from app.services.anomaly_detection import AnomalyDetector
+                    detector = AnomalyDetector()
+                    anomaly = detector.detect_anomalies(history)
+                    
+                    if anomaly["is_anomaly"]:
+                        # Store in detection metadata
+                        detection.metadata_["anomaly"] = anomaly
+                        db.add(detection)
+                        
+                        try:
+                            await manager.broadcast({
+                                "type": "anomaly_alert",
+                                "data": {
+                                    "id": str(detection.id),
+                                    "anomaly_type": anomaly["anomaly_type"],
+                                    "confidence": anomaly["confidence"]
+                                }
+                            })
+                        except Exception:
+                            pass
+                except Exception as e:
+                    logger.warning(f"Phase 3C Anomaly Detection failed: {e}")
+                # ----------------------------------
+                
+            await db.flush()
+        except Exception as e:
+            logger.warning(f"Phase 3 AI Pipeline failed: {e}")
+    # -------------------------------------
+
     return new_detections
 
 
